@@ -36,7 +36,7 @@ void ASW_PlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::PawnMove);
-		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::PawnMove);
+		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::PawnLook);
 	}
 }
 
