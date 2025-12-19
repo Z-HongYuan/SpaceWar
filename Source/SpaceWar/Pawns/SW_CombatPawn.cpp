@@ -3,8 +3,11 @@
 
 #include "SW_CombatPawn.h"
 
+#include "SpaceWar/Components/SW_FloatingPawnMovement.h"
 
-ASW_CombatPawn::ASW_CombatPawn()
+
+ASW_CombatPawn::ASW_CombatPawn() :
+	FloatingMovement(CreateDefaultSubobject<USW_FloatingPawnMovement>(TEXT("FloatingMovement")))
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
