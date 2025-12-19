@@ -36,6 +36,7 @@ void ASW_PlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::PawnMove);
+		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::PawnMove);
 	}
 }
 
@@ -43,6 +44,12 @@ void ASW_PlayerController::PawnMove(const FInputActionValue& Value)
 {
 	if (!GetPawn()) return;
 	GetPawn()->AddMovementInput(Value.Get<FVector>());
+}
+
+void ASW_PlayerController::PawnLook(const FInputActionValue& Value)
+{
+	AddYawInput(Value.Get<FVector>().X);
+	AddPitchInput(Value.Get<FVector>().Y);
 }
 
 void ASW_PlayerController::ChangeInputContext(UInputMappingContext* Context, int32 Priority, bool bIsAdd)

@@ -31,6 +31,7 @@ protected:
 	virtual void SetupInputComponent() override;
 
 	void PawnMove(const FInputActionValue& Value);
+	void PawnLook(const FInputActionValue& Value);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Default", meta = (AllowPrivateAccess = "true"))
@@ -38,6 +39,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Default", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Default", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> LookAction;
 
 public:
 	/*
