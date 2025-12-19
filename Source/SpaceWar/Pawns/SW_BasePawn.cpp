@@ -3,10 +3,18 @@
 
 #include "SW_BasePawn.h"
 
+#include "GameFramework/GameplayCameraComponent.h"
 
-ASW_BasePawn::ASW_BasePawn()
+
+ASW_BasePawn::ASW_BasePawn() :
+	Mesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"))),
+	GameplayCamera(CreateDefaultSubobject<UGameplayCameraComponent>(TEXT("GameplayCamera")))
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	SetRootComponent(Mesh);
+
+	GameplayCamera->SetupAttachment(GetRootComponent());
 }
 
 void ASW_BasePawn::Tick(float DeltaTime)

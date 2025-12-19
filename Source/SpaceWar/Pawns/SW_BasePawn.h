@@ -6,11 +6,12 @@
 #include "GameFramework/Pawn.h"
 #include "SW_BasePawn.generated.h"
 
+class UGameplayCameraComponent;
 /*
  * 基础Pawn
  * 创建局内局外公有的函数
  */
-UCLASS()
+UCLASS(Abstract)
 class SPACEWAR_API ASW_BasePawn : public APawn
 {
 	GENERATED_BODY()
@@ -26,6 +27,22 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	/*
+	 * 基础Mesh
+	 */
+	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	/*
+	 * 摄像机
+	 */
+	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UGameplayCameraComponent> GameplayCamera;
 
 public:
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpaceWar")
+	FORCEINLINE UStaticMeshComponent* GetMesh() const { return Mesh; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpaceWar")
+	FORCEINLINE UGameplayCameraComponent* GetGameplayCamera() const { return GameplayCamera; }
 };
