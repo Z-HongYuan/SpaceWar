@@ -19,6 +19,8 @@ class SPACEWAR_API ASW_BasePawn : public APawn
 public:
 	ASW_BasePawn();
 
+	virtual void PossessedBy(AController* NewController) override;
+
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
