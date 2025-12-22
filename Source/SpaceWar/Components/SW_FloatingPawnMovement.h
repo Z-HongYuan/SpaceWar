@@ -19,10 +19,16 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	/*
+	 * 当输入调用的时候,检查规则
+	 */
+	virtual void AddInputVector(FVector WorldVector, bool bForce = false) override;
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
 
 public:
+//	FORCEINLINE void SetMaxSpeed(const float& InMaxSpeed) { MaxSpeed = InMaxSpeed; }
 };
