@@ -8,7 +8,8 @@
 
 ASW_BasePawn::ASW_BasePawn() :
 	Mesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"))),
-	GameplayCamera(CreateDefaultSubobject<UGameplayCameraComponent>(TEXT("GameplayCamera")))
+	GameplayCamera(CreateDefaultSubobject<UGameplayCameraComponent>(TEXT("GameplayCamera"))),
+	GridBuildComponent(CreateDefaultSubobject<USW_GridBuildComponent>(TEXT("GridBuildComponent")))
 {
 	PrimaryActorTick.bCanEverTick = false;
 

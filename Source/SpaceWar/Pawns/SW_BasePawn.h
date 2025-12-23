@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "SpaceWar/Components/SW_GridBuildComponent.h"
 #include "SW_BasePawn.generated.h"
 
 class UGameplayCameraComponent;
@@ -40,6 +41,12 @@ private:
 	 */
 	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UGameplayCameraComponent> GameplayCamera;
+
+	/*
+	 * 网格组件
+	 */
+	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USW_GridBuildComponent> GridBuildComponent;
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpaceWar")
