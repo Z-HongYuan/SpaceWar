@@ -3,7 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "SW_BasePawn.h"
+#include "SpaceWar/AbilitySystem/Attributes/SW_AttributeSetBase.h"
+#include "SpaceWar/AbilitySystem/Components/SW_AbilitySystemComponent.h"
 #include "SW_CombatPawn.generated.h"
 
 class USW_FloatingPawnMovement;
@@ -11,7 +14,7 @@ class USW_FloatingPawnMovement;
  * 用于战斗的Pawn
  */
 UCLASS()
-class SPACEWAR_API ASW_CombatPawn : public ASW_BasePawn
+class SPACEWAR_API ASW_CombatPawn : public ASW_BasePawn, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -32,7 +35,18 @@ private:
 	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USW_FloatingPawnMovement> FloatingMovement;
 
+	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USW_AbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USW_AttributeSetBase> AttributeSet;
+
 public:
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpaceWar")
+	FORCEINLINE USW_AttributeSetBase* GetAttributeSet() const { return AttributeSet; }
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpaceWar")
 	FORCEINLINE USW_FloatingPawnMovement* GetFloatingMovement() const { return FloatingMovement; }
 };

@@ -7,7 +7,9 @@
 
 
 ASW_CombatPawn::ASW_CombatPawn() :
-	FloatingMovement(CreateDefaultSubobject<USW_FloatingPawnMovement>(TEXT("FloatingMovement")))
+	FloatingMovement(CreateDefaultSubobject<USW_FloatingPawnMovement>(TEXT("FloatingMovement"))),
+	AbilitySystemComponent(CreateDefaultSubobject<USW_AbilitySystemComponent>(TEXT("AbilitySystemComponent"))),
+	AttributeSet(CreateDefaultSubobject<USW_AttributeSetBase>(TEXT("AttributeSet")))
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -25,4 +27,9 @@ void ASW_CombatPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ASW_CombatPawn::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+UAbilitySystemComponent* ASW_CombatPawn::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
