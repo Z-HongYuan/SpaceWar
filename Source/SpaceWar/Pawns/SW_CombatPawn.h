@@ -28,6 +28,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	void InitAttribute();
+
 private:
 	/*
 	 * 基础的漂浮组件
@@ -40,6 +42,9 @@ private:
 
 	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USW_AttributeSetBase> AttributeSet;
+
+	UPROPERTY(Category=Pawn, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
 
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;

@@ -27,6 +27,20 @@ void ASW_CombatPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ASW_CombatPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitAttribute();
+}
+
+void ASW_CombatPawn::InitAttribute()
+{
+	if (GetAbilitySystemComponent() and AttributeSet and DefaultAttributeEffect)
+	{
+		FGameplayEffectSpecHandle DefaultAtt = GetAbilitySystemComponent()->MakeOutgoingSpec(
+			DefaultAttributeEffect,
+			1,
+			GetAbilitySystemComponent()->MakeEffectContext());
+		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*DefaultAtt.Data.Get());
+	}
 }
 
 UAbilitySystemComponent* ASW_CombatPawn::GetAbilitySystemComponent() const
