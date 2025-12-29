@@ -3,6 +3,11 @@
 
 #include "SW_FloatingPawnMovement.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
+#include "SpaceWar/AbilitySystem/Attributes/SW_AttributeSetBase.h"
+#include "SpaceWar/Pawns/SW_CombatPawn.h"
+
 
 USW_FloatingPawnMovement::USW_FloatingPawnMovement()
 {
@@ -33,6 +38,16 @@ void USW_FloatingPawnMovement::AddInputVector(FVector WorldVector, bool bForce)
 
 
 	Super::AddInputVector(WorldVector, bForce);
+}
+
+float USW_FloatingPawnMovement::GetMaxSpeed() const
+{
+	if (const ASW_CombatPawn* CombatPawn = GetOwner<ASW_CombatPawn>())
+	{
+		return CombatPawn->GetAttributeSet()->GetMaxSpeed();
+	}
+
+	return Super::GetMaxSpeed();
 }
 
 void USW_FloatingPawnMovement::BeginPlay()

@@ -24,11 +24,17 @@ public:
 	 */
 	virtual void AddInputVector(FVector WorldVector, bool bForce = false) override;
 
+	/*
+	 * 关联AttributeSet内的属性
+	 */
+	virtual float GetMaxSpeed() const override;
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
 
+	
 public:
-//	FORCEINLINE void SetMaxSpeed(const float& InMaxSpeed) { MaxSpeed = InMaxSpeed; }
+	//	FORCEINLINE void SetMaxSpeed(const float& InMaxSpeed) { MaxSpeed = InMaxSpeed; }
 };
