@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SpaceWar/Data/BuildingType.h"
+#include "SpaceWar/Data/SW_BuildingType.h"
 #include "SW_BuildingActor.generated.h"
 
 enum class EBuildingGridType : uint8;

@@ -3,7 +3,7 @@
 
 #include "SW_BuildingFunction.h"
 
-#include "SpaceWar/Data/BuildingType.h"
+#include "SpaceWar/Data/SW_BuildingType.h"
 
 
 TArray<FIntPoint> USW_BuildingFunction::BFL_GetShapeFootPrint(EBuildingGridType BuildingGridType)
