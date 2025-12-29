@@ -4,6 +4,7 @@
 #include "SW_GridBuildComponent.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "SpaceWar/SaveGame/SW_SaveGame.h"
 
 
 USW_GridBuildComponent::USW_GridBuildComponent()
@@ -14,7 +15,7 @@ USW_GridBuildComponent::USW_GridBuildComponent()
 void USW_GridBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
+
 	if (CurrentBuildingState == EBuildingState::EBS_Building)
 	{
 		UpdateCursorBuildingLocation();
@@ -322,4 +323,42 @@ void USW_GridBuildComponent::Confirm_Handle()
 void USW_GridBuildComponent::Cancel_Handle()
 {
 	CancelCurrentAction();
+}
+
+void USW_GridBuildComponent::ReBuildActorFromSaveGame(USW_SaveGame* InSaveGame)
+{
+	if (!InSaveGame) return;
+
+	for (const FBuildingSaveData& Element : InSaveGame->BuildingSaveData)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = GetOwner();
+		SpawnParams.Instigator = GetOwner<APawn>();
+		ASW_BuildingActor* SpawnedBuilding = GetWorld()->SpawnActor<ASW_BuildingActor>(Element.BuildingClass, GetWorldLocationFromPoint(Element.GridCoord), Element.CurrentRotate,
+		                                                                               SpawnParams);
+		SpawnedBuilding->OnBuilded();
+	}
+}
+
+void USW_GridBuildComponent::SaveActorToSaveGame(USW_SaveGame* InSaveGame)
+{
+	if (!InSaveGame) return;
+	InSaveGame->BuildingSaveData.Empty();
+
+	TArray<AActor*> BuildingArray;
+	UGameplayStatics::GetAllActorsOfClass(this, ASW_BuildingActor::StaticClass(), BuildingArray);
+
+	for (AActor* Element : BuildingArray)
+	{
+		ASW_BuildingActor* Building = Cast<ASW_BuildingActor>(Element);
+		if (!Building) continue;
+
+		InSaveGame->BuildingSaveData.Add(
+			FBuildingSaveData(
+				Building->GetClass(),
+				Building->GetBuildingGridType(),
+				Building->GetActorRotation(),
+				GetPointFromWorldLocation(Building->GetActorLocation())
+			));
+	}
 }
