@@ -43,4 +43,29 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, MaxHealth)
+
+	/*
+	 * 最大速度
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData MaxSpeed;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, MaxSpeed)
+	
+	/*
+	 * 基础燃料
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData Fuel;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, Fuel)
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData MaxFuel;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, MaxFuel)
+	
+	/*
+	 * 视野范围
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData ViewRange;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, ViewRange)
 };
