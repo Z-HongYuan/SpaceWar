@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "AttributeSet.h"
 #include "SW_AttributeSetBase.generated.h"
 
@@ -26,9 +27,20 @@ class SPACEWAR_API USW_AttributeSetBase : public UAttributeSet
 public:
 	USW_AttributeSetBase();
 
-protected:
+	/*
+	 * 限制函数
+	 */
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
-private:
+	/*
+	 * 生命值
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData Health;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, Health)
 
-public:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData MaxHealth;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, MaxHealth)
 };
