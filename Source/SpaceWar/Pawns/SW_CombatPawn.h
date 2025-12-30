@@ -46,6 +46,12 @@ private:
 	UPROPERTY(Category=Pawn, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
 	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
 
+	UPROPERTY(Category="Pawn|战争迷雾", EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UMaterialParameterCollection> MaterialParameterCollection;
+
+	UPROPERTY(Category="Pawn|战争迷雾", EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	FName ParameterName;
+
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
