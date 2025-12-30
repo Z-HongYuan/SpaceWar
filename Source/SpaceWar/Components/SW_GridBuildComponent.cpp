@@ -79,7 +79,7 @@ void USW_GridBuildComponent::RotateHeldBuilding()
 	if (!HeldBuilding) return;
 
 	HeldBuilding->SetCurrentRotate((HeldBuilding->GetCurrentRotate() + 90) % 360);
-	HeldBuilding->SetActorRotation(HeldBuilding->GetActorRotation().Add(0, 0, 90));
+	HeldBuilding->SetActorRotation(HeldBuilding->GetActorRotation().Add(0, 90, 0));
 
 	//CheckAndHighlight
 	CheckAndHighlight(GetCellFromWorldLocation(HeldBuilding->GetActorLocation())->GetCellPosition(), HeldBuilding->GetShapeFootPrint());
@@ -242,6 +242,8 @@ void USW_GridBuildComponent::UpdateCursorBuildingLocation()
 	if (!bIsSuccess) return;
 
 	ASW_Cell* HitCell = GetCellFromWorldLocation(HitResult.Location);
+	if (!HitCell) return;
+
 	HeldBuilding->SetActorLocation(GetWorldLocationFromPoint(HitCell->GetCellPosition()));
 
 	CheckAndHighlight(HitCell->GetCellPosition(), HeldBuilding->GetShapeFootPrint());
@@ -275,7 +277,7 @@ void USW_GridBuildComponent::InitGrid()
 			ASW_Cell* Spawned = GetWorld()->SpawnActor<ASW_Cell>(CellClass, GetWorldLocationFromPoint(FIntPoint(X, Y)), FRotator::ZeroRotator, SpawnParams);
 			Spawned->SetCellPosition(FIntPoint(X, Y));
 			GridArray.Add(Spawned);
-			
+
 			//附加到Pawn上
 			Spawned->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 		}
@@ -347,7 +349,7 @@ void USW_GridBuildComponent::ReBuildActorFromSaveGame(USW_SaveGame* InSaveGame)
 		ASW_BuildingActor* SpawnedBuilding = GetWorld()->SpawnActor<ASW_BuildingActor>(Element.BuildingClass, GetWorldLocationFromPoint(Element.GridCoord), Element.CurrentRotate,
 		                                                                               SpawnParams);
 		SpawnedBuilding->OnBuilded();
-		
+
 		//绑定到Actor
 		SpawnedBuilding->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 	}
