@@ -43,7 +43,17 @@ void ASW_PlayerController::SetupInputComponent()
 void ASW_PlayerController::PawnMove(const FInputActionValue& Value)
 {
 	if (!GetPawn()) return;
-	GetPawn()->AddMovementInput(Value.Get<FVector>());
+
+	const FVector2D Input = Value.Get<FVector2D>();
+
+	const FRotator YawRot(0.f, GetControlRotation().Yaw, 0.f);
+
+	//获取向前和向右向量
+	FVector Forward = YawRot.Quaternion().GetForwardVector();
+	FVector Right = YawRot.Quaternion().GetRightVector();
+
+	GetPawn()->AddMovementInput(Forward, Value.Get<FVector>().X);
+	GetPawn()->AddMovementInput(Right, Value.Get<FVector>().Y);
 }
 
 void ASW_PlayerController::PawnLook(const FInputActionValue& Value)
