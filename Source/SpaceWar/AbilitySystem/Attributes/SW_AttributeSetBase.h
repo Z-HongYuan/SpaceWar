@@ -34,7 +34,7 @@ public:
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	/*
-	 * 生命值
+	 * 生命值,限制到 0~MaxHealth
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
 	FGameplayAttributeData Health;
@@ -45,27 +45,41 @@ public:
 	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, MaxHealth)
 
 	/*
-	 * 最大速度
+	 * 最大速度,限制到 0~9999
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
 	FGameplayAttributeData MaxSpeed;
 	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, MaxSpeed)
-	
+
 	/*
-	 * 基础燃料
+	 * 基础燃料,限制到 0~MaxFuel
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
 	FGameplayAttributeData Fuel;
 	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, Fuel)
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
 	FGameplayAttributeData MaxFuel;
 	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, MaxFuel)
-	
+
 	/*
-	 * 视野范围
+	 * 视野范围,未限制,需要映射
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
 	FGameplayAttributeData ViewRange;
 	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, ViewRange)
+
+	/*
+	 * 加速度,限制到 0~9999
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData Acceleration;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, Acceleration)
+	
+	/*
+	 * 燃料消耗,未限制
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData FuelCost;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, FuelCost)
 };

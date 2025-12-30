@@ -21,6 +21,9 @@ void USW_AttributeSetBase::PreAttributeChange(const FGameplayAttribute& Attribut
 
 	if (Attribute == GetFuelAttribute())
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxFuel());
+
+	if (Attribute == GetAccelerationAttribute())
+		NewValue = FMath::Clamp(NewValue, 0.f, 9999);
 }
 
 void USW_AttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -35,4 +38,7 @@ void USW_AttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCal
 
 	if (Data.EvaluatedData.Attribute == GetFuelAttribute())
 		SetFuel(FMath::Clamp(GetFuel(), 0.f, GetMaxFuel()));
+
+	if (Data.EvaluatedData.Attribute == GetAccelerationAttribute())
+		SetAcceleration(FMath::Clamp(GetAcceleration(), 0.f, 9999));
 }
