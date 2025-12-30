@@ -3,6 +3,7 @@
 
 #include "SW_GridBuildComponent.h"
 
+#include "SW_FloatingPawnMovement.h"
 #include "Kismet/GameplayStatics.h"
 #include "SpaceWar/SaveGame/SW_SaveGame.h"
 
@@ -353,6 +354,16 @@ void USW_GridBuildComponent::ReBuildActorFromSaveGame(USW_SaveGame* InSaveGame)
 		//绑定到Actor
 		SpawnedBuilding->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 	}
+
+	/*
+	 * 建造组件准备好了之后,才能再调用移动组件中
+	 */
+	GetOwner()->ForEachComponent<USW_FloatingPawnMovement>(
+		false,
+		[](USW_FloatingPawnMovement* Component)
+		{
+			Component->UpdatePropellerArray();
+		});
 }
 
 void USW_GridBuildComponent::SaveActorToSaveGame(USW_SaveGame* InSaveGame)

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "SpaceWar/Building/BuildingActor/SW_Building_Propeller.h"
 #include "SW_FloatingPawnMovement.generated.h"
 
 /*
@@ -33,8 +34,20 @@ private:
 	/*
 	 * 关联AttributeSet内的属性
 	 */
+	UFUNCTION()
 	void UpdateAttributeDelegate(bool bIsAdd);
+
+	/*
+	 * 推进器数组
+	 */
+	UPROPERTY()
+	TArray<ASW_Building_Propeller*> PropellerArray = {};
 
 public:
 	//	FORCEINLINE void SetMaxSpeed(const float& InMaxSpeed) { MaxSpeed = InMaxSpeed; }
+
+	/*
+	 * 更新推进器
+	 */
+	void UpdatePropellerArray();
 };

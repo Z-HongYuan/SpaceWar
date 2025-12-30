@@ -36,6 +36,7 @@ void ASW_PlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::PawnMove);
+		Input->BindAction(MoveAction, ETriggerEvent::Completed, this, &ThisClass::PawnMove);//如果不再调用一次的话,自定义的移动组件将不会停止移动
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::PawnLook);
 	}
 }
@@ -43,20 +44,6 @@ void ASW_PlayerController::SetupInputComponent()
 void ASW_PlayerController::PawnMove(const FInputActionValue& Value)
 {
 	if (!GetPawn()) return;
-
-	/*
-	const FVector2D Input = Value.Get<FVector2D>();
-
-	const FRotator YawRot(0.f, GetControlRotation().Yaw, 0.f);
-
-	//获取向前和向右向量
-	FVector Forward = YawRot.Quaternion().GetForwardVector();
-	FVector Right = YawRot.Quaternion().GetRightVector();
-
-	GetPawn()->AddMovementInput(Forward, Value.Get<FVector>().X);
-	GetPawn()->AddMovementInput(Right, Value.Get<FVector>().Y);
-	*/
-
 	GetPawn()->AddMovementInput(Value.Get<FVector>());
 }
 

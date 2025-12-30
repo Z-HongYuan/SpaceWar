@@ -39,3 +39,17 @@ enum class EBuildingState : uint8
 
 	EBS_Max UMETA(DisplayName="None")
 };
+
+/*
+ * 未使用,推进器的方位问题由Dot公式处理
+ */
+UENUM()
+enum class EBuildingDirection : uint8
+{
+	EBD_Forward UMETA(DisplayName="向前"),
+	EBD_Backward UMETA(DisplayName="向后"),
+	EBD_Left UMETA(DisplayName="向左"),
+	EBD_Right UMETA(DisplayName="向右"),
+
+	EBD_Max UMETA(DisplayName="None")
+};
