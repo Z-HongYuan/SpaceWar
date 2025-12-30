@@ -153,6 +153,9 @@ void USW_GridBuildComponent::CommitBuildingToGrid()
 		}
 	}
 
+	//绑定建筑到Actor上
+	HeldBuilding->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
+
 	CleanHighlight();
 	HeldBuilding->OnBuilded();
 	HeldBuilding = nullptr;
@@ -214,6 +217,10 @@ void USW_GridBuildComponent::DeleteSelectBuilding()
 			}
 		}
 	}
+
+	//解绑建筑
+	SelectedBuilding->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
 	//删除建筑物
 	SelectedBuilding->Destroy();
 	SelectedBuilding = nullptr;
@@ -268,6 +275,9 @@ void USW_GridBuildComponent::InitGrid()
 			ASW_Cell* Spawned = GetWorld()->SpawnActor<ASW_Cell>(CellClass, GetWorldLocationFromPoint(FIntPoint(X, Y)), FRotator::ZeroRotator, SpawnParams);
 			Spawned->SetCellPosition(FIntPoint(X, Y));
 			GridArray.Add(Spawned);
+			
+			//附加到Pawn上
+			Spawned->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 		}
 	}
 }
@@ -337,6 +347,9 @@ void USW_GridBuildComponent::ReBuildActorFromSaveGame(USW_SaveGame* InSaveGame)
 		ASW_BuildingActor* SpawnedBuilding = GetWorld()->SpawnActor<ASW_BuildingActor>(Element.BuildingClass, GetWorldLocationFromPoint(Element.GridCoord), Element.CurrentRotate,
 		                                                                               SpawnParams);
 		SpawnedBuilding->OnBuilded();
+		
+		//绑定到Actor
+		SpawnedBuilding->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
 	}
 }
 
