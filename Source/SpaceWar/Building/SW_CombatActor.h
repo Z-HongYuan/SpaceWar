@@ -10,7 +10,7 @@
 /*
  * 战斗Actor
  * 通过GameplayTags判断是否激活状态树
- * 
+ * 如果Pawn内有ASC,游戏开始就会执行状态树
  */
 UCLASS()
 class SPACEWAR_API ASW_CombatActor : public ASW_BuildingActor
