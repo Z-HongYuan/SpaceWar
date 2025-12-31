@@ -338,11 +338,15 @@ void USW_GridBuildComponent::Cancel_Handle()
 	CancelCurrentAction();
 }
 
-void USW_GridBuildComponent::ReBuildActorFromSaveGame(USW_SaveGame* InSaveGame)
+void USW_GridBuildComponent::ReBuildActorFromSaveGame(USaveGame* InSaveGame, USaveGame*& OutSaveGame)
 {
-	if (!InSaveGame) return;
+	OutSaveGame = InSaveGame;
 
-	for (const FBuildingSaveData& Element : InSaveGame->BuildingSaveData)
+	if (!InSaveGame) return;
+	USW_SaveGame* SaveGame = Cast<USW_SaveGame>(InSaveGame);
+	if (!SaveGame) return;
+
+	for (const FBuildingSaveData& Element : SaveGame->BuildingSaveData)
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = GetOwner();
@@ -366,10 +370,14 @@ void USW_GridBuildComponent::ReBuildActorFromSaveGame(USW_SaveGame* InSaveGame)
 		});
 }
 
-void USW_GridBuildComponent::SaveActorToSaveGame(USW_SaveGame* InSaveGame)
+void USW_GridBuildComponent::SaveActorToSaveGame(USaveGame* InSaveGame, USaveGame*& OutSaveGame)
 {
+	OutSaveGame = InSaveGame;
+
 	if (!InSaveGame) return;
-	InSaveGame->BuildingSaveData.Empty();
+	USW_SaveGame* SaveGame = Cast<USW_SaveGame>(InSaveGame);
+	if (!SaveGame) return;
+	SaveGame->BuildingSaveData.Empty();
 
 	TArray<AActor*> BuildingArray;
 	UGameplayStatics::GetAllActorsOfClass(this, ASW_BuildingActor::StaticClass(), BuildingArray);
@@ -379,7 +387,7 @@ void USW_GridBuildComponent::SaveActorToSaveGame(USW_SaveGame* InSaveGame)
 		ASW_BuildingActor* Building = Cast<ASW_BuildingActor>(Element);
 		if (!Building) continue;
 
-		InSaveGame->BuildingSaveData.Add(
+		SaveGame->BuildingSaveData.Add(
 			FBuildingSaveData(
 				Building->GetClass(),
 				Building->GetBuildingGridType(),

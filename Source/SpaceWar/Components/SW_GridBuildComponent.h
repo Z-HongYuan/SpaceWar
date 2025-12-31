@@ -8,7 +8,7 @@
 #include "SpaceWar/Building/SW_Cell.h"
 #include "SW_GridBuildComponent.generated.h"
 
-class USW_SaveGame;
+class USaveGame;
 /*
  * 仅使用行优先算法网格
  */
@@ -132,8 +132,8 @@ public:
 	void Cancel_Handle();
 
 	UFUNCTION(BlueprintCallable)
-	void ReBuildActorFromSaveGame(USW_SaveGame* InSaveGame);
+	void ReBuildActorFromSaveGame(USaveGame* InSaveGame, USaveGame*& OutSaveGame);
 
 	UFUNCTION(BlueprintCallable)
-	void SaveActorToSaveGame(USW_SaveGame* InSaveGame);
+	void SaveActorToSaveGame(USaveGame* InSaveGame, USaveGame*& OutSaveGame);
 };
