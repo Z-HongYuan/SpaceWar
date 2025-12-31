@@ -50,4 +50,15 @@ public:
 	 * 更新推进器
 	 */
 	void UpdatePropellerArray();
+
+	/*
+	 * 旋转事件
+	 * 输入为 -1~1,判断为顺时针还是逆时针
+	 */
+	void AddInputRotation(float InRotation);
+	
+	/*
+	 * 急停事件
+	 */
+	void EmergencyStop(bool InRotation);
 };

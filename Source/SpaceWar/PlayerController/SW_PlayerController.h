@@ -32,6 +32,8 @@ protected:
 
 	void PawnMove(const FInputActionValue& Value);
 	void PawnLook(const FInputActionValue& Value);
+	void PawnRotation(const FInputActionValue& Value);
+	void PawnStopMove(const FInputActionValue& Value);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Default", meta = (AllowPrivateAccess = "true"))
@@ -42,6 +44,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Default", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Default", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> RotationAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Default", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> StopMoveAction;
 
 public:
 	/*

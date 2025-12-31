@@ -5,6 +5,7 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "SpaceWar/Components/SW_FloatingPawnMovement.h"
 
 ASW_PlayerController::ASW_PlayerController()
 {
@@ -36,8 +37,14 @@ void ASW_PlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::PawnMove);
-		Input->BindAction(MoveAction, ETriggerEvent::Completed, this, &ThisClass::PawnMove);//如果不再调用一次的话,自定义的移动组件将不会停止移动
+		Input->BindAction(MoveAction, ETriggerEvent::Completed, this, &ThisClass::PawnMove); //如果不再调用一次的话,自定义的移动组件将不会停止移动
+
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &ThisClass::PawnLook);
+
+		Input->BindAction(RotationAction, ETriggerEvent::Started, this, &ThisClass::PawnRotation);
+
+		Input->BindAction(StopMoveAction, ETriggerEvent::Triggered, this, &ThisClass::PawnStopMove);
+		Input->BindAction(StopMoveAction, ETriggerEvent::Completed, this, &ThisClass::PawnStopMove); //停止是通过持续按下来触发的
 	}
 }
 
@@ -51,6 +58,20 @@ void ASW_PlayerController::PawnLook(const FInputActionValue& Value)
 {
 	AddYawInput(Value.Get<FVector>().X);
 	AddPitchInput(Value.Get<FVector>().Y);
+}
+
+void ASW_PlayerController::PawnRotation(const FInputActionValue& Value)
+{
+	if (!GetPawn()) return;
+	if (USW_FloatingPawnMovement* MovementComponent = Cast<USW_FloatingPawnMovement>(GetPawn()->GetMovementComponent()))
+		MovementComponent->AddInputRotation(Value.Get<float>());
+}
+
+void ASW_PlayerController::PawnStopMove(const FInputActionValue& Value)
+{
+	if (!GetPawn()) return;
+	if (USW_FloatingPawnMovement* MovementComponent = Cast<USW_FloatingPawnMovement>(GetPawn()->GetMovementComponent()))
+		MovementComponent->EmergencyStop(Value.Get<bool>());
 }
 
 void ASW_PlayerController::ChangeInputContext(UInputMappingContext* Context, int32 Priority, bool bIsAdd)

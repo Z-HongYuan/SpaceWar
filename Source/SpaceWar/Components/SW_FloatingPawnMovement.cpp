@@ -51,7 +51,7 @@ void USW_FloatingPawnMovement::AddInputVector(FVector WorldVector, bool bForce)
 		Super::AddInputVector(FVector(0, 0, 0), bForce);
 	}
 
-	for (ASW_Building_Propeller* Propeller : PropellerArray)
+	for (ASW_Building_Propeller*& Propeller : PropellerArray)
 	{
 		double Angle = -WorldVector.Dot(Propeller->Direction);
 
@@ -136,4 +136,30 @@ void USW_FloatingPawnMovement::UpdatePropellerArray()
 		}
 		return true; // 继续
 	});
+}
+
+void USW_FloatingPawnMovement::AddInputRotation(float InRotation)
+{
+	if (InRotation > 0) //向右旋转
+	{
+		GetOwner()->SetActorRotation(FRotator(0, GetOwner()->GetActorRotation().Yaw + 90.f, 0));
+	}
+	else //向左旋转
+	{
+		GetOwner()->SetActorRotation(FRotator(0, GetOwner()->GetActorRotation().Yaw - 90.f, 0));
+	}
+
+	for (ASW_Building_Propeller*& Propeller : PropellerArray)
+	{
+		Propeller->UpdateDirection();
+	}
+}
+
+void USW_FloatingPawnMovement::EmergencyStop(bool InRotation)
+{
+	if (InRotation)
+	{
+		AddInputVector(-GetVelocityForNavMovement().GetSafeNormal());
+	}
+	//获取当前速度
 }
