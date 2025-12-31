@@ -56,6 +56,7 @@ private:
 
 	UPROPERTY(Category=Pawn, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartedAbility;
+
 	/*
 	 * 战争迷雾
 	 */

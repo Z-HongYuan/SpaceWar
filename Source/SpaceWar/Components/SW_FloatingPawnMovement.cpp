@@ -45,6 +45,7 @@ void USW_FloatingPawnMovement::AddInputVector(FVector WorldVector, bool bForce)
 	 * 3. 停用所有不满足条件1的推进器
 	 * 4. 筛选/过滤输入向量(未完成),当输入向量为左前时,正后方推进器被激活,移动方向为左前
 	 */
+	bool bHasPropeller = false;
 
 	if (PropellerArray.Num() == 0)
 	{
@@ -59,6 +60,7 @@ void USW_FloatingPawnMovement::AddInputVector(FVector WorldVector, bool bForce)
 		if (Angle > FMath::Cos(FMath::DegreesToRadians(HalfDirectionAngle)))
 		{
 			Propeller->EnablePropeller();
+			bHasPropeller = true;
 		}
 		else
 		{
@@ -67,7 +69,11 @@ void USW_FloatingPawnMovement::AddInputVector(FVector WorldVector, bool bForce)
 	}
 
 	//没有对应的推进器,搞个事件给个UI提示
-	//TODO 
+	if ((PropellerArray.Num() == 0 or !bHasPropeller) && !WorldVector.IsNearlyZero())
+	{
+		OnNoPropeller.Broadcast(bHasPropeller);
+	}
+
 
 	Super::AddInputVector(WorldVector, bForce);
 }

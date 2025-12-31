@@ -7,6 +7,9 @@
 #include "SpaceWar/Building/BuildingActor/SW_Building_Propeller.h"
 #include "SW_FloatingPawnMovement.generated.h"
 
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNoPropeller, bool, bHasPropeller);
+
 /*
  * 自定义的漂浮组件
  */
@@ -47,7 +50,7 @@ public:
 	//	FORCEINLINE void SetMaxSpeed(const float& InMaxSpeed) { MaxSpeed = InMaxSpeed; }
 
 	/*
-	 * 更新推进器
+	 * 更新推进器,如果推进器能被摧毁的话,需要更新推进器数组
 	 */
 	void UpdatePropellerArray();
 
@@ -62,6 +65,9 @@ public:
 	 */
 	void EmergencyStop(bool InRotation);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=FloatingPawnMovement,meta=(Min=0,Max=90))
+	UPROPERTY(BlueprintAssignable)
+	FOnNoPropeller OnNoPropeller;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=FloatingPawnMovement, meta=(Min=0, Max=90))
 	float HalfDirectionAngle = 40.f;
 };
