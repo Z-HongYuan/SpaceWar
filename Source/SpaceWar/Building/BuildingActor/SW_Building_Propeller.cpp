@@ -40,18 +40,43 @@ void ASW_Building_Propeller::EnablePropeller()
 	//如果启动就不需要再启动了
 	if (bIsEnablePropeller) return;
 
-	FGameplayEffectSpecHandle EffectSpec = GetOwner<ASW_CombatPawn>()->GetAbilitySystemComponent()->MakeOutgoingSpec(
+	const ASW_CombatPawn* CombatPawn = GetOwner<ASW_CombatPawn>();
+	if (!CombatPawn) return;
+
+	//检查燃料,持续停止和启动停止
+	//1. 启动停止
+	const float Fuel = CombatPawn->GetAttributeSet()->GetFuel();
+	if (Fuel <= 0 or Fuel < FuelCost) //其实这里检测应该是所有的FuelCost,但是这样也够了
+	{
+		DisablePropeller();
+		return;
+	}
+
+	//把设定值设置到GE
+	FGameplayEffectSpecHandle EffectSpec = CombatPawn->GetAbilitySystemComponent()->MakeOutgoingSpec(
 		EffectClass,
 		1,
-		GetOwner<ASW_CombatPawn>()->GetAbilitySystemComponent()->MakeEffectContext()
+		CombatPawn->GetAbilitySystemComponent()->MakeEffectContext()
 	);
 	EffectSpec.Data->SetSetByCallerMagnitude(TAG_DataTag_Acceleration, Acceleration);
 	EffectSpec.Data->SetSetByCallerMagnitude(TAG_DataTag_FuelCost, FuelCost);
 
-	EffectHandle = GetOwner<ASW_CombatPawn>()->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(
+	EffectHandle = CombatPawn->GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(
 		*EffectSpec.Data.Get()
 	);
 
+	//2. 持续停止. 添加属性监控
+	OnFuelChangeDelegateHandle = CombatPawn->GetAbilitySystemComponent()->GetGameplayAttributeValueChangeDelegate(
+		USW_AttributeSetBase::GetFuelAttribute()
+	).AddWeakLambda(this, [this](const FOnAttributeChangeData& Data)
+	{
+		if (Data.NewValue <= 0)
+		{
+			DisablePropeller();
+		}
+	});
+
+	//触发蓝图事件
 	OnPropellerChange(true);
 
 	bIsEnablePropeller = true;
@@ -59,12 +84,24 @@ void ASW_Building_Propeller::EnablePropeller()
 
 void ASW_Building_Propeller::DisablePropeller()
 {
-	//移除消耗和加速度
+	const ASW_CombatPawn* CombatPawn = GetOwner<ASW_CombatPawn>();
+	if (!CombatPawn) return;
+
+	//移除消耗和加速度的GE
 	if (EffectHandle.IsValid())
 	{
-		GetOwner<ASW_CombatPawn>()->GetAbilitySystemComponent()->RemoveActiveGameplayEffect(EffectHandle);
+		CombatPawn->GetAbilitySystemComponent()->RemoveActiveGameplayEffect(EffectHandle);
 	}
 
-	bIsEnablePropeller = false;
+	if (OnFuelChangeDelegateHandle.IsValid())
+	{
+		CombatPawn->GetAbilitySystemComponent()->GetGameplayAttributeValueChangeDelegate(
+			USW_AttributeSetBase::GetMaxFuelAttribute()
+		).Remove(OnFuelChangeDelegateHandle);
+	}
+
+	//触发蓝图事件
 	OnPropellerChange(false);
+
+	bIsEnablePropeller = false;
 }

@@ -28,6 +28,8 @@ private:
 	UPROPERTY()
 	FActiveGameplayEffectHandle EffectHandle;
 
+	FDelegateHandle OnFuelChangeDelegateHandle;
+
 public:
 	UFUNCTION()
 	void EnablePropeller();
