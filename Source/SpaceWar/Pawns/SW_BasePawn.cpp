@@ -17,6 +17,7 @@ ASW_BasePawn::ASW_BasePawn() :
 
 	GameplayCamera->SetupAttachment(GetRootComponent());
 	GameplayCamera->bAutoActivate = false;
+	GameplayCamera->bSetControlRotationWhenViewTarget = true;
 }
 
 void ASW_BasePawn::PossessedBy(AController* NewController)
