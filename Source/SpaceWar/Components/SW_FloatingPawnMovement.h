@@ -56,9 +56,12 @@ public:
 	 * 输入为 -1~1,判断为顺时针还是逆时针
 	 */
 	void AddInputRotation(float InRotation);
-	
+
 	/*
 	 * 急停事件
 	 */
 	void EmergencyStop(bool InRotation);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=FloatingPawnMovement,meta=(Min=0,Max=90))
+	float HalfDirectionAngle = 40.f;
 };

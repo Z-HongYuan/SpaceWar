@@ -18,9 +18,9 @@ USW_FloatingPawnMovement::USW_FloatingPawnMovement()
 	UMovementComponent::SetPlaneConstraintAxisSetting(EPlaneConstraintAxisSetting::Z);
 
 	//设置基本的移动参数
-	MaxSpeed = 1200.f;
-	Acceleration = 200.f;
-	Deceleration = 100.f;
+	MaxSpeed = 0.f;
+	Acceleration = 0.f;
+	Deceleration = 0.f;
 	TurningBoost = 0.f;
 }
 
@@ -55,8 +55,8 @@ void USW_FloatingPawnMovement::AddInputVector(FVector WorldVector, bool bForce)
 	{
 		double Angle = -WorldVector.Dot(Propeller->Direction);
 
-		//夹角小于30度材激活
-		if (Angle > FMath::Cos(FMath::DegreesToRadians(30.f)))
+		//夹角小于40度材激活
+		if (Angle > FMath::Cos(FMath::DegreesToRadians(HalfDirectionAngle)))
 		{
 			Propeller->EnablePropeller();
 		}
@@ -66,6 +66,8 @@ void USW_FloatingPawnMovement::AddInputVector(FVector WorldVector, bool bForce)
 		}
 	}
 
+	//没有对应的推进器,搞个事件给个UI提示
+	//TODO 
 
 	Super::AddInputVector(WorldVector, bForce);
 }
@@ -157,9 +159,15 @@ void USW_FloatingPawnMovement::AddInputRotation(float InRotation)
 
 void USW_FloatingPawnMovement::EmergencyStop(bool InRotation)
 {
-	if (InRotation)
+	if (!GetVelocityForNavMovement().IsNearlyZero(5) and InRotation)
 	{
 		AddInputVector(-GetVelocityForNavMovement().GetSafeNormal());
 	}
+	else
+	{
+		AddInputVector(FVector(0, 0, 0));
+	}
+
+
 	//获取当前速度
 }
