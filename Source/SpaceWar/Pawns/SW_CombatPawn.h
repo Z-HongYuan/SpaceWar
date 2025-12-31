@@ -30,6 +30,8 @@ protected:
 
 	void InitAttribute();
 
+	void InitAbilitySystem();
+
 private:
 	/*
 	 * 基础的漂浮组件
@@ -37,6 +39,9 @@ private:
 	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USW_FloatingPawnMovement> FloatingMovement;
 
+	/*
+	 * 能力组件
+	 */
 	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USW_AbilitySystemComponent> AbilitySystemComponent;
 
@@ -46,6 +51,14 @@ private:
 	UPROPERTY(Category=Pawn, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
 	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
 
+	UPROPERTY(Category=Pawn, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<UGameplayEffect>> StartedEffect;
+
+	UPROPERTY(Category=Pawn, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<UGameplayAbility>> StartedAbility;
+	/*
+	 * 战争迷雾
+	 */
 	UPROPERTY(Category="Pawn|战争迷雾", EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UMaterialParameterCollection> MaterialParameterCollection;
 

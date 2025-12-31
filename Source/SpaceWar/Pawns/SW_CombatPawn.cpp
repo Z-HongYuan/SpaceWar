@@ -31,7 +31,7 @@ void ASW_CombatPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitAttribute();
+	InitAbilitySystem();
 }
 
 void ASW_CombatPawn::InitAttribute()
@@ -44,6 +44,27 @@ void ASW_CombatPawn::InitAttribute()
 			GetAbilitySystemComponent()->MakeEffectContext());
 		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*DefaultAtt.Data.Get());
 	}
+}
+
+void ASW_CombatPawn::InitAbilitySystem()
+{
+	GetAbilitySystemComponent()->InitAbilityActorInfo(this, this);
+
+	for (const TSubclassOf<UGameplayAbility>& Ability : StartedAbility)
+	{
+		GetAbilitySystemComponent()->GiveAbility(FGameplayAbilitySpec(Ability, 1, 0, this));
+	}
+
+	for (const TSubclassOf<UGameplayEffect>& Effect : StartedEffect)
+	{
+		FGameplayEffectSpecHandle DefaultAtt = GetAbilitySystemComponent()->MakeOutgoingSpec(
+			Effect,
+			1,
+			GetAbilitySystemComponent()->MakeEffectContext());
+		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*DefaultAtt.Data.Get());
+	}
+
+	InitAttribute();
 }
 
 UAbilitySystemComponent* ASW_CombatPawn::GetAbilitySystemComponent() const
