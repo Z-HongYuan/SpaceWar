@@ -88,7 +88,7 @@ void USW_GridBuildComponent::RotateHeldBuilding()
 
 void USW_GridBuildComponent::CleanHighlight()
 {
-	for (ASW_Cell* Element : PreHighlightArray)
+	for (ASW_Cell*& Element : PreHighlightArray)
 	{
 		//改变外观
 		Element->SetCellState(ECellState::ECS_Idle);
@@ -107,7 +107,7 @@ bool USW_GridBuildComponent::CheckAndHighlight(const FIntPoint& InPoint, const T
 
 	ECellState FinalCellState = ECellState::ECS_Idle;
 
-	for (FIntPoint Element : InFootPrint)
+	for (const FIntPoint& Element : InFootPrint)
 	{
 		FIntPoint Temp;
 		Temp = Element + InPoint;
@@ -125,7 +125,7 @@ bool USW_GridBuildComponent::CheckAndHighlight(const FIntPoint& InPoint, const T
 	}
 	bCanBuild ? FinalCellState = ECellState::ECS_CanBuild : FinalCellState = ECellState::ECS_CannotBuild;
 
-	for (ASW_Cell* Element : WaitToHighlight)
+	for (ASW_Cell*& Element : WaitToHighlight)
 	{
 		Element->SetCellState(FinalCellState);
 		PreHighlightArray.Add(Element);
@@ -141,7 +141,7 @@ void USW_GridBuildComponent::CommitBuildingToGrid()
 	//建筑物的原点
 	ASW_Cell* OriginCell = GetCellFromWorldLocation(HeldBuilding->GetActorLocation());
 
-	for (FIntPoint Element : HeldBuilding->GetShapeFootPrint())
+	for (FIntPoint& Element : HeldBuilding->GetShapeFootPrint())
 	{
 		FIntPoint Point;
 		Point = OriginCell->GetCellPosition() + Element;
@@ -374,7 +374,7 @@ void USW_GridBuildComponent::SaveActorToSaveGame(USW_SaveGame* InSaveGame)
 	TArray<AActor*> BuildingArray;
 	UGameplayStatics::GetAllActorsOfClass(this, ASW_BuildingActor::StaticClass(), BuildingArray);
 
-	for (AActor* Element : BuildingArray)
+	for (AActor*& Element : BuildingArray)
 	{
 		ASW_BuildingActor* Building = Cast<ASW_BuildingActor>(Element);
 		if (!Building) continue;
