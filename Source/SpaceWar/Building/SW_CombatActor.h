@@ -7,6 +7,8 @@
 #include "Components/StateTreeComponent.h"
 #include "SW_CombatActor.generated.h"
 
+class UGameplayAbility;
+class UAbilitySystemComponent;
 /*
  * 战斗Actor
  * 通过GameplayTags判断是否激活状态树
@@ -28,6 +30,15 @@ protected:
 private:
 	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStateTreeComponent> StateTreeComponent;
+
+	UPROPERTY(Category=Ability, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<UGameplayAbility>> AbilityClassArray;
+
+	UFUNCTION()
+	void AddAbilityToOwner();
+
+	UFUNCTION()
+	UAbilitySystemComponent* GetOwnerAbilitySystemComponent();
 
 public:
 };

@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "SpaceWar/AbilitySystem/Abilities/SW_AbilityBase.h"
 #include "SpaceWar/Data/SW_GameplayTags.h"
 
 
@@ -20,18 +21,31 @@ void ASW_CombatActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APawn* Pawn = GetOwner<APawn>();
+	AddAbilityToOwner();
 
-	if (Pawn && Pawn->Implements<UAbilitySystemInterface>())
+	if (GetOwnerAbilitySystemComponent() and GetOwnerAbilitySystemComponent()->HasMatchingGameplayTag(TAG_LevelState_Combat))
 	{
-		UAbilitySystemComponent* ASC = Cast<IAbilitySystemInterface>(Pawn)->GetAbilitySystemComponent();
-
-		if (ASC && ASC->HasMatchingGameplayTag(TAG_LevelState_Combat))
-		{
-			// Pawn 拥有该 GameplayTag,执行行为树
-			StateTreeComponent->StartLogic();
-		}
+		// Pawn 拥有该 GameplayTag,执行行为树
+		StateTreeComponent->StartLogic();
 	}
+}
+
+void ASW_CombatActor::AddAbilityToOwner()
+{
+	if (!GetOwnerAbilitySystemComponent()) return;
+
+	for (const TSubclassOf<UGameplayAbility>& Ability : AbilityClassArray)
+	{
+		GetOwnerAbilitySystemComponent()->GiveAbility(FGameplayAbilitySpec(Ability, 1, 0, this));
+	}
+}
+
+UAbilitySystemComponent* ASW_CombatActor::GetOwnerAbilitySystemComponent()
+{
+	const IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(GetOwner());
+	if (!ASI) return nullptr;
+	UAbilitySystemComponent* ASC = ASI->GetAbilitySystemComponent();
+	return ASC ? ASC : nullptr;
 }
 
 void ASW_CombatActor::Tick(float DeltaTime)
