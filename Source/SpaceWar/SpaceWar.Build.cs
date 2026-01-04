@@ -8,12 +8,16 @@ public class SpaceWar : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"GameplayCameras", "GameplayTags", "GameplayAbilities", "GameplayTasks",
-			"GameplayStateTreeModule", "StateTreeModule"
+			"GameplayCameras",	//摄像机
+			"GameplayTags", "GameplayAbilities", "GameplayTasks",	//Gameplay技能
+			"GameplayStateTreeModule", "StateTreeModule"	//状态树
 		});
 
 		// Uncomment if you are using Slate UI
