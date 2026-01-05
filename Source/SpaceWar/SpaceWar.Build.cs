@@ -15,9 +15,9 @@ public class SpaceWar : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
-			"GameplayCameras",	//摄像机
-			"GameplayTags", "GameplayAbilities", "GameplayTasks",	//Gameplay技能
-			"GameplayStateTreeModule", "StateTreeModule"	//状态树
+			"GameplayCameras", //摄像机
+			"GameplayTags", "GameplayAbilities", "GameplayTasks", //Gameplay技能
+			"GameplayStateTreeModule", "StateTreeModule" //状态树
 		});
 
 		// Uncomment if you are using Slate UI

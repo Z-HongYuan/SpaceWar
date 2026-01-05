@@ -75,7 +75,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
 	FGameplayAttributeData Acceleration;
 	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, Acceleration)
-	
+
 	/*
 	 * 燃料消耗,未限制
 	 */

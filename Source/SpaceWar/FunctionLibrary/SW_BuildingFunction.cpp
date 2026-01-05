@@ -57,7 +57,7 @@ void USW_BuildingFunction::BFL_RotateFootPrint(TArray<FIntPoint>& InFootPrintArr
 		//这是逆时针90度
 		const FIntPoint Temp = FIntPoint(-FootPrint.Y, FootPrint.X);
 		// const FIntPoint Temp = FIntPoint(FootPrint.Y, -FootPrint.X); 这是顺时针90度
-		
+
 		FootPrint = Temp;
 	}
 }
