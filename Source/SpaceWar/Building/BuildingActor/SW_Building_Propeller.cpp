@@ -19,11 +19,6 @@ void ASW_Building_Propeller::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ASW_Building_Propeller::UpdateDirection()
-{
-	Direction = (GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal();
-}
-
 void ASW_Building_Propeller::BeginPlay()
 {
 	Super::BeginPlay();
@@ -104,4 +99,9 @@ void ASW_Building_Propeller::DisablePropeller()
 	OnPropellerChange(false);
 
 	bIsEnablePropeller = false;
+}
+
+void ASW_Building_Propeller::UpdateDirection()
+{
+	Direction = (GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal();
 }

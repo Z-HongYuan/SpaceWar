@@ -10,12 +10,12 @@ ASW_Enemy::ASW_Enemy() :
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ASW_Enemy::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void ASW_Enemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ASW_Enemy::BeginPlay()
+{
+	Super::BeginPlay();
 }

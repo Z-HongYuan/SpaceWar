@@ -17,6 +17,11 @@ ASW_CombatActor::ASW_CombatActor() :
 	StateTreeComponent->SetStartLogicAutomatically(false);
 }
 
+void ASW_CombatActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 void ASW_CombatActor::BeginPlay()
 {
 	Super::BeginPlay();
@@ -46,9 +51,4 @@ UAbilitySystemComponent* ASW_CombatActor::GetOwnerAbilitySystemComponent()
 	if (!ASI) return nullptr;
 	UAbilitySystemComponent* ASC = ASI->GetAbilitySystemComponent();
 	return ASC ? ASC : nullptr;
-}
-
-void ASW_CombatActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
