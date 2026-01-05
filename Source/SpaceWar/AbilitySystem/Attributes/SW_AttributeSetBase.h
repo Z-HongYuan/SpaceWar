@@ -82,4 +82,18 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
 	FGameplayAttributeData FuelCost;
 	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, FuelCost)
+
+	/*
+	 * 电力值,限制到 0~最大电力值
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData Power;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, Power)
+
+	/*
+	 * 最大电力值
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	FGameplayAttributeData MaxPower;
+	ATTRIBUTE_ACCESSORS(USW_AttributeSetBase, MaxPower)
 };

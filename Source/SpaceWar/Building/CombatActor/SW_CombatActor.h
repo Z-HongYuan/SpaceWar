@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SW_BuildingActor.h"
+#include "../SW_BuildingActor.h"
 #include "Components/StateTreeComponent.h"
 #include "SW_CombatActor.generated.h"
 
