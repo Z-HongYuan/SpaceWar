@@ -7,6 +7,11 @@
 #include "GameFramework/Actor.h"
 #include "SW_Enemy.generated.h"
 
+/*
+ * 简单Enemy
+ * 有初始血量
+ * 只会执行状态树,并且受到伤害
+ */
 UCLASS()
 class SPACEWAR_API ASW_Enemy : public AActor
 {
@@ -25,4 +30,8 @@ private:
 	TObjectPtr<UStateTreeComponent> StateTreeComponent;
 
 public:
+	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+	UPROPERTY(BlueprintReadWrite, meta=(ExposeOnSpawn), Category = "Enemy")
+	float Health;
 };

@@ -5,6 +5,7 @@
 
 #include "SW_FloatingPawnMovement.h"
 #include "Kismet/GameplayStatics.h"
+#include "SpaceWar/Data/SW_CollisionChannels.h"
 #include "SpaceWar/SaveGame/SW_SaveGame.h"
 
 
@@ -239,7 +240,7 @@ void USW_GridBuildComponent::UpdateCursorBuildingLocation()
 	if (!bIsSuccess) return;
 
 	FHitResult HitResult;
-	bIsSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, WorldLocation + WorldDirection * 100000, ECC_Visibility);
+	bIsSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, WorldLocation + WorldDirection * 100000, ECC_Object_Cell);
 	if (!bIsSuccess) return;
 
 	ASW_Cell* HitCell = GetCellFromWorldLocation(HitResult.Location);

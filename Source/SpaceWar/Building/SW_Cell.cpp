@@ -10,6 +10,8 @@ ASW_Cell::ASW_Cell() :
 	PrimaryActorTick.bCanEverTick = true;
 
 	SetRootComponent(CellMesh);
+	CellMesh->SetCollisionProfileName(TEXT("Cell"));
+	CellMesh->SetGenerateOverlapEvents(false);
 }
 
 void ASW_Cell::Tick(float DeltaTime)

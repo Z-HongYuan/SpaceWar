@@ -17,7 +17,8 @@ public class SpaceWar : ModuleRules
 		{
 			"GameplayCameras", //摄像机
 			"GameplayTags", "GameplayAbilities", "GameplayTasks", //Gameplay技能
-			"GameplayStateTreeModule", "StateTreeModule" //状态树
+			"GameplayStateTreeModule", "StateTreeModule", //状态树
+			"Niagara" //粒子系统
 		});
 
 		// Uncomment if you are using Slate UI

@@ -11,6 +11,7 @@ ASW_BuildingActor::ASW_BuildingActor() :
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SetRootComponent(BuildingMesh);
+	BuildingMesh->SetCollisionProfileName(TEXT("Building"));
 }
 
 void ASW_BuildingActor::Tick(float DeltaTime)
