@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/BoxComponent.h"
 #include "Components/StateTreeComponent.h"
 #include "GameFramework/Actor.h"
+#include "SpaceWar/Components/SW_DetectFogOfWarComp.h"
 #include "SW_Enemy.generated.h"
 
+class UNiagaraSystem;
+class UGameplayEffect;
 /*
  * 简单Enemy
  * 有初始血量
@@ -22,16 +26,43 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void BeginDestroy() override;
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	UFUNCTION()
+	void OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+	                       const FHitResult& SweepResult);
 
 private:
-	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(Category=SpaceWar, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStateTreeComponent> StateTreeComponent;
+
+	UPROPERTY(Category=SpaceWar, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UBoxComponent> BoxComponent;
+
+	UPROPERTY(Category=SpaceWar, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
 public:
 	virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(BlueprintReadWrite, meta=(ExposeOnSpawn), Category = "Enemy")
 	float Health;
+
+	/*
+	 * 必须使用针对于Pawn造成伤害的GameplayEffect,如果需要伤害削减的话,需要使用MetaDamage属性
+	 */
+	UPROPERTY(Category=SpaceWar, EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> EffectClass;
+
+	// 被攻击时的特效
+	UPROPERTY(Category=SpaceWar, EditDefaultsOnly)
+	TSoftObjectPtr<UNiagaraSystem> HitFX;
+
+	// 死亡时的特效
+	UPROPERTY(Category=SpaceWar, EditDefaultsOnly)
+	TSoftObjectPtr<UNiagaraSystem> DieFX;
 };

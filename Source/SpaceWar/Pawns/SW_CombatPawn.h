@@ -58,13 +58,9 @@ private:
 	TArray<TSubclassOf<UGameplayAbility>> StartedAbility;
 
 	/*
-	 * 战争迷雾
+	 * 战争迷雾未确定实现路径
 	 */
-	UPROPERTY(Category="Pawn|战争迷雾", EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UMaterialParameterCollection> MaterialParameterCollection;
 
-	UPROPERTY(Category="Pawn|战争迷雾", EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
-	FName ParameterName;
 
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;

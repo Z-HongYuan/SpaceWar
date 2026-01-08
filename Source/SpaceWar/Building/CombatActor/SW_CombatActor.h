@@ -31,7 +31,7 @@ private:
 	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStateTreeComponent> StateTreeComponent;
 
-	UPROPERTY(Category=Ability, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(Category="SpaceWar|Ability", EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> AbilityClassArray;
 
 	UFUNCTION()
@@ -40,5 +40,9 @@ private:
 	UFUNCTION()
 	UAbilitySystemComponent* GetOwnerAbilitySystemComponent();
 
+	UPROPERTY(Category="SpaceWar", EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	FVector2D VisionSize = FVector2D(0.f, 0.f);
+
 public:
+	FORCENOINLINE FVector2D GetVisionSize() const { return VisionSize; }
 };
