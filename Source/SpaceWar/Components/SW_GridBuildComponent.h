@@ -104,6 +104,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<ASW_BuildingActor> HeldBuilding = nullptr;
 
+	UPROPERTY()
+	TArray<ASW_BuildingActor*> CurrentBuildingArray = {};
+
 public:
 	/*
 	 * 初始化网格
@@ -136,4 +139,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SaveActorToSaveGame(USaveGame* InSaveGame, USaveGame*& OutSaveGame);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	const TArray<ASW_BuildingActor*>& GetBuildingArray() { return CurrentBuildingArray; }
 };

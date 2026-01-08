@@ -310,7 +310,7 @@ void USW_GridBuildComponent::Confirm_Handle()
 		bIsSuccess = UGameplayStatics::GetPlayerController(GetWorld(), 0)->DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
 		if (!bIsSuccess) break;
 
-		bIsSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, WorldLocation + WorldDirection * 100000, ECC_Visibility);
+		bIsSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, WorldLocation + WorldDirection * 100000, ECC_Object_Building);
 		if (!bIsSuccess) break;
 
 		if (ASW_BuildingActor* HitBuilding = Cast<ASW_BuildingActor>(HitResult.GetHitObjectHandle().FetchActor()))
@@ -358,6 +358,8 @@ void USW_GridBuildComponent::ReBuildActorFromSaveGame(USaveGame* InSaveGame, USa
 
 		//绑定到Actor
 		SpawnedBuilding->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
+		
+		CurrentBuildingArray.Add(SpawnedBuilding);
 	}
 
 	/*
