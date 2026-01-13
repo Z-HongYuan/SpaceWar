@@ -38,12 +38,13 @@ void ASW_Enemy::BeginPlay()
 	Super::BeginPlay();
 
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnBoxOverlapBegin);
+	BoxComponent->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
 }
 
 void ASW_Enemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	BoxComponent->OnComponentBeginOverlap.RemoveDynamic(this, &ThisClass::OnBoxOverlapBegin);
-
+	BoxComponent->OnComponentHit.RemoveDynamic(this, &ThisClass::OnHit);
 	//生成死亡特效
 	if (UNiagaraSystem* FX = DieFX.LoadSynchronous())
 	{
@@ -55,6 +56,17 @@ void ASW_Enemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ASW_Enemy::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                   const FHitResult& SweepResult)
+{
+	if (UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+	{
+		const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(EffectClass, 1, FGameplayEffectContextHandle());
+		ASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), ASC);
+
+		Destroy();
+	}
+}
+
+void ASW_Enemy::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 	{

@@ -6,7 +6,6 @@
 #include "Components/BoxComponent.h"
 #include "Components/StateTreeComponent.h"
 #include "GameFramework/Actor.h"
-#include "SpaceWar/Components/SW_DetectFogOfWarComp.h"
 #include "SW_Enemy.generated.h"
 
 class UNiagaraSystem;
@@ -35,6 +34,12 @@ protected:
 	UFUNCTION()
 	void OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 	                       const FHitResult& SweepResult);
+
+	/*
+	 * 因为是使用的设置移动,所以永远不会触发Hit
+	 */
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 private:
 	UPROPERTY(Category=SpaceWar, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
