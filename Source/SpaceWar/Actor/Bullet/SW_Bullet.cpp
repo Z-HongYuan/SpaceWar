@@ -8,20 +8,14 @@
 
 
 ASW_Bullet::ASW_Bullet() :
-	ProjectileMovement(CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"))),
 	NiagaraSystem(CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraSystem"))),
 	BoxComponent(CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent")))
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	ProjectileMovement->ProjectileGravityScale = 0.f;
-	ProjectileMovement->bRotationFollowsVelocity = true;
-	ProjectileMovement->bUpdateOnlyIfRendered = true;
-
 	SetRootComponent(BoxComponent);
 	BoxComponent->SetCollisionProfileName(TEXT("Projectile"));
-
-	SetActorTickInterval(0.5f);
+	BoxComponent->SetGenerateOverlapEvents(false);
 
 	NiagaraSystem->SetupAttachment(RootComponent);
 }
@@ -30,38 +24,20 @@ void ASW_Bullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (TrackingMode and TargetActor.IsValid())
-	//追踪Target,考虑是否在Building中保存当前TargetActor,否则子弹会丢失目标,在目标死亡后
-	{
-		FVector CurrentVelocity = ProjectileMovement->Velocity;
-		FVector Direction = TargetActor->GetActorLocation() - GetActorLocation();
-		ProjectileMovement->Velocity = Direction.GetSafeNormal() * CurrentVelocity.Size();
-	}
-	if (!TargetActor.IsValid())
-	{
-		//判断到底需不需要销毁
-		// Destroy();
-	}
+	TickMovement(DeltaTime);
 }
 
 void ASW_Bullet::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ProjectileMovement->Velocity = GetActorRotation().Vector() * BallisticVelocity;;
-
-	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnOverlapBegin);
 }
 
 void ASW_Bullet::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	BoxComponent->OnComponentBeginOverlap.RemoveDynamic(this, &ThisClass::OnOverlapBegin);
-
 	Super::EndPlay(EndPlayReason);
 }
 
-void ASW_Bullet::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                                const FHitResult& SweepResult)
+void ASW_Bullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	//判断DamageRange是否大于0
 	if (DamageRange > 0.f)
@@ -77,7 +53,7 @@ void ASW_Bullet::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 			GetOwner(),
 			GetOwner()->GetInstigatorController(),
 			true,
-			ECC_Trace_Enemy);
+			ECC_Trace_CanDamage); //使用Enemy通道检测范围Actor
 	}
 	else
 	{
@@ -89,6 +65,53 @@ void ASW_Bullet::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 			this,
 			nullptr);
 	}
+}
 
-	Destroy();
+void ASW_Bullet::TickMovement(float DeltaTime)
+{
+	if (!bIsActiveMovement) return;
+
+	// ----------------------- 计算本帧位移 -----------------------
+	float MoveDistanceThisFrame = BallisticVelocity * DeltaTime;
+	FVector DeltaMove = GetActorForwardVector() * MoveDistanceThisFrame;
+
+	// ----------------------- Sweep 检测 -----------------------
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this); // 忽略自己
+	QueryParams.AddIgnoredActor(GetOwner()); // 通常忽略发射者
+	// QueryParams.bTraceComplex = true;              // 如需精确碰撞可开启（性能代价）
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(), // 起点
+		GetActorLocation() + DeltaMove, // 终点
+		FQuat::Identity, // 旋转（Box一般不用转）
+		ECC_Object_Projectile, // 建议新建一个专用的 Projectile Channel
+		FCollisionShape::MakeBox(BoxComponent->GetScaledBoxExtent()), // 用你的 Box 大小
+		QueryParams
+	);
+
+	if (bHit)
+	{
+		// 撞到了！手动模拟 Hit 事件
+		OnHit(
+			BoxComponent,
+			HitResult.GetActor(),
+			HitResult.GetComponent(),
+			FVector::ZeroVector, // 或者用 HitResult.ImpactNormal * someImpulse
+			HitResult
+		);
+	}
+	else
+	{
+		// 没撞到，安全移动
+		AddActorWorldOffset(DeltaMove, true); // true = sweep，但我们已经自己扫过了，所以可以 false 省一点性能
+	}
+
+	// 可选：更新朝向跟随速度方向（类似 ProjectileMovement 的 bRotationFollowsVelocity）
+	if (!DeltaMove.IsNearlyZero())
+	{
+		SetActorRotation(DeltaMove.Rotation());
+	}
 }
