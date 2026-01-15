@@ -6,7 +6,7 @@
 FBulletItemParam::FBulletItemParam()
 {
 	InNeedOwner = nullptr;
-	InSpawnLocation = FTransform();
+	InSpawnTransform = FTransform();
 	BallisticVelocity = 0.f;
 	DamageRange = 0.f;
 	Damage = 0.f;
@@ -14,11 +14,11 @@ FBulletItemParam::FBulletItemParam()
 	TargetActor = nullptr;
 }
 
-FBulletItemParam::FBulletItemParam(AActor* InNeedOwner, const FTransform& InSpawnLocation, const float InBallisticVelocity, const float InDamageRange, const float InDamage,
+FBulletItemParam::FBulletItemParam(AActor* InNeedOwner, const FTransform& InSpawnTransform, const float InBallisticVelocity, const float InDamageRange, const float InDamage,
                                    const bool InTrackingMode, AActor* InTargetActor)
 {
 	this->InNeedOwner = InNeedOwner;
-	this->InSpawnLocation = InSpawnLocation;
+	this->InSpawnTransform = InSpawnTransform;
 	this->BallisticVelocity = InBallisticVelocity;
 	this->DamageRange = InDamageRange;
 	this->Damage = InDamage;

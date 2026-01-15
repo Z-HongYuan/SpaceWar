@@ -26,6 +26,8 @@
 //自身是Cell
 #define ECC_Object_Cell ECC_GameTraceChannel3
 
+//自身是Enemy
+#define ECC_Object_Enemy ECC_GameTraceChannel5
 
 /*
  * 检测通道枚举 / Trace Channel Enum
@@ -35,4 +37,4 @@
 // +DefaultChannelResponses=(Channel=ECC_GameTraceChannel4,DefaultResponse=ECR_Ignore,bTraceType=True,bStaticObject=False,Name="Enemy")
 
 //检查敌人通道
-#define ECC_Trace_Enemy ECC_GameTraceChannel4
+#define ECC_Trace_CanDamage ECC_GameTraceChannel4
