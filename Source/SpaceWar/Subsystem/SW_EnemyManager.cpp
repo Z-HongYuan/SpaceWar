@@ -3,17 +3,7 @@
 
 #include "SW_EnemyManager.h"
 
-#include "SpaceWar/Enemy/SW_Enemy.h"
-
-void USW_EnemyManager::Initialize(FSubsystemCollectionBase& Collection)
-{
-	Super::Initialize(Collection);
-}
-
-void USW_EnemyManager::Deinitialize()
-{
-	Super::Deinitialize();
-}
+#include "SpaceWar/Enemy/SW_EnemyPoolItem.h"
 
 bool USW_EnemyManager::ShouldCreateSubsystem(UObject* Outer) const
 {
@@ -21,19 +11,48 @@ bool USW_EnemyManager::ShouldCreateSubsystem(UObject* Outer) const
 	return Super::ShouldCreateSubsystem(Outer);
 }
 
-void USW_EnemyManager::InitEnemyPool()
+void USW_EnemyManager::InitEnemyPool(const TSubclassOf<ASW_EnemyPoolItem> InEnemyPoolItemClass, const int32 InPoolSize)
 {
-	for (FEnemyPoolParameter Element : EnemyPoolNum)
-	{
-		for (int32 i = 0; i < Element.Num; i++)
-		{
-			FActorSpawnParameters SpawnParameters;
+	if (!GetWorld()) return;
+	if (!InEnemyPoolItemClass) return;
+	EnemyPoolItemClass = InEnemyPoolItemClass;
+	PoolSize = InPoolSize;
 
-			GetWorld()->SpawnActor<ASW_Enemy>(Element.EnemyClass, SpawnParameters);
-		}
+	const FTransform TempTransform = FTransform();
+	for (int32 i = 0; i < PoolSize; i++)
+	{
+		ASW_EnemyPoolItem* TempBullet = GetWorld()->SpawnActorDeferred<ASW_EnemyPoolItem>(EnemyPoolItemClass, TempTransform, nullptr, nullptr,
+		                                                                                  ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		TempBullet->EnemyManager = this;
+		TempBullet->FinishSpawning(TempTransform);
+		TempBullet->DeactiveItem();
+		EnemyFreeList.Add(TempBullet);
 	}
 }
 
-void USW_EnemyManager::GetEnemyFromPool(EEnemyType EnemyType, TObjectPtr<class ASW_Enemy>& OutEnemy)
+ASW_EnemyPoolItem* USW_EnemyManager::GetEnemy(const FEnemyItemParam& InEnemyParam)
 {
+	if (EnemyFreeList.Num() > 0)
+	{
+		ASW_EnemyPoolItem* TempEnemy = EnemyFreeList.Pop();
+		TempEnemy->ActiveItem(InEnemyParam);
+		EnemyUsedList.Add(TempEnemy);
+		return TempEnemy;
+	}
+
+	//新建并返回
+	if (!EnemyPoolItemClass) return nullptr;
+	ASW_EnemyPoolItem* TempBullet = GetWorld()->SpawnActor<ASW_EnemyPoolItem>(EnemyPoolItemClass);
+	TempBullet->EnemyManager = this;
+	TempBullet->ActiveItem(InEnemyParam);
+	EnemyUsedList.Add(TempBullet);
+	return TempBullet;
+}
+
+void USW_EnemyManager::ReturnEnemy(ASW_EnemyPoolItem* Enemy)
+{
+	if (!Enemy) return;
+	EnemyUsedList.RemoveSingle(Enemy);
+	Enemy->DeactiveItem();
+	EnemyFreeList.Add(Enemy);
 }

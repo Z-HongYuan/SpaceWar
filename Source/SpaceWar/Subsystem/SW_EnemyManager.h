@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SpaceWar/Data/SW_EnemyType.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "SW_EnemyManager.generated.h"
 
 
+struct FEnemyItemParam;
+class ASW_EnemyPoolItem;
 /**
  * 用于敌人对象池的管理
  */
@@ -17,29 +18,39 @@ class SPACEWAR_API USW_EnemyManager : public UWorldSubsystem
 	GENERATED_BODY()
 
 public:
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-
-	virtual void Deinitialize() override;
-
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 
 protected:
-	void InitEnemyPool();
-
-	void GetEnemyFromPool(EEnemyType EnemyType, TObjectPtr<class ASW_Enemy>& OutEnemy);
 
 private:
 	/*
 	 * 敌人Array
 	 */
 	UPROPERTY()
-	TArray<TObjectPtr<class ASW_Enemy>> EnemyArray;
+	TArray<ASW_EnemyPoolItem*> EnemyFreeList;
 
-	/*
-	 * 敌人最大数量
-	 */
 	UPROPERTY()
-	TArray<FEnemyPoolParameter> EnemyPoolNum;
+	TArray<ASW_EnemyPoolItem*> EnemyUsedList;
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void InitEnemyPool(const TSubclassOf<ASW_EnemyPoolItem> InEnemyPoolItemClass, const int32 InPoolSize = 100);
+
+	//对象池内数量
+	float PoolSize;
+
+	//要生成的Class
+	UPROPERTY()
+	TSubclassOf<ASW_EnemyPoolItem> EnemyPoolItemClass;
+
+	UFUNCTION(BlueprintCallable)
+	ASW_EnemyPoolItem* GetEnemy(const FEnemyItemParam& InEnemyParam);
+
+	void ReturnEnemy(ASW_EnemyPoolItem* Enemy);
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetEnemyUsedNum() const { return EnemyUsedList.Num(); }
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetEnemyFreeNum() const { return EnemyFreeList.Num(); }
 };
