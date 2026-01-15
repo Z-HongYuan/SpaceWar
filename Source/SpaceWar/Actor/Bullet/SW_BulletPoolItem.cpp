@@ -87,7 +87,7 @@ void ASW_BulletPoolItem::ReturnBullet()
 void ASW_BulletPoolItem::SetBulletParam(const FBulletItemParam& InBulletParam)
 {
 	SetOwner(InBulletParam.InNeedOwner);
-	SetActorTransform(InBulletParam.InSpawnLocation);
+	SetActorTransform(InBulletParam.InSpawnTransform);
 	BallisticVelocity = InBulletParam.BallisticVelocity;
 	Damage = InBulletParam.Damage;
 	DamageRange = InBulletParam.DamageRange;

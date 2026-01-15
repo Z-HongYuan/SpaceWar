@@ -6,7 +6,6 @@
 #include "NiagaraComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "SW_Bullet.generated.h"
 
 /*
@@ -41,6 +40,8 @@ private:
 
 	UPROPERTY(Category = "Projectile", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> BoxComponent;
+
+	FHitResult HitResult;
 
 public:
 	UBoxComponent* GetBoxComponent() const { return BoxComponent; }

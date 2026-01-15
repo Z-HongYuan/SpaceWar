@@ -73,10 +73,9 @@ void ASW_Bullet::TickMovement(float DeltaTime)
 
 	// ----------------------- 计算本帧位移 -----------------------
 	float MoveDistanceThisFrame = BallisticVelocity * DeltaTime;
-	FVector DeltaMove = GetActorForwardVector() * MoveDistanceThisFrame;
+	FVector DeltaMove = GetActorForwardVector() * MoveDistanceThisFrame; //可以修改位移方向
 
 	// ----------------------- Sweep 检测 -----------------------
-	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this); // 忽略自己
 	QueryParams.AddIgnoredActor(GetOwner()); // 通常忽略发射者
