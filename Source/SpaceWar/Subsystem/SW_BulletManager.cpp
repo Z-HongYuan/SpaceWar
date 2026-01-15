@@ -12,10 +12,12 @@ bool USW_BulletManager::ShouldCreateSubsystem(UObject* Outer) const
 	return Super::ShouldCreateSubsystem(Outer);
 }
 
-void USW_BulletManager::InitBulletPool()
+void USW_BulletManager::InitBulletPool(const TSubclassOf<ASW_BulletPoolItem> InBulletPoolItemClass, const int32 InPoolSize)
 {
 	if (!GetWorld()) return;
-	if (!BulletPoolItemClass) return;
+	if (!InBulletPoolItemClass) return;
+	BulletPoolItemClass = InBulletPoolItemClass;
+	PoolSize = InPoolSize;
 
 	const FTransform TempTransform = FTransform();
 	for (int32 i = 0; i < PoolSize; i++)

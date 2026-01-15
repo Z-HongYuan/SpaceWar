@@ -33,12 +33,12 @@ public:
 	 * 初始化子弹池
 	 */
 	UFUNCTION(BlueprintCallable)
-	void InitBulletPool();
+	void InitBulletPool(const TSubclassOf<ASW_BulletPoolItem> InBulletPoolItemClass, const int32 InPoolSize = 100);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BulletPool")
+	UPROPERTY()
 	TSubclassOf<ASW_BulletPoolItem> BulletPoolItemClass;
 
-	int32 PoolSize = 100;
+	int32 PoolSize;
 	/*
 	 * 池内没有空闲的子弹,则创建一个
 	 */
@@ -49,4 +49,11 @@ public:
 	 * 释放子弹,归还子弹,子弹将自动释放
 	 */
 	void ReturnBullet(ASW_BulletPoolItem* Bullet);
+
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetBulletUsedNum() const { return BulletUsedList.Num(); }
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetBulletFreeNum() const { return BulletFreeList.Num(); }
 };
