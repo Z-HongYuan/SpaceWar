@@ -17,7 +17,7 @@ ASW_BasePawn::ASW_BasePawn() :
 
 	GameplayCamera->SetupAttachment(GetRootComponent());
 	GameplayCamera->bAutoActivate = false;
-	GameplayCamera->bSetControlRotationWhenViewTarget = true;
+	GameplayCamera->bSetControlRotationWhenViewTarget = false;	//关闭设置控制旋转,因为需要设置默认旋转
 }
 
 void ASW_BasePawn::PossessedBy(AController* NewController)

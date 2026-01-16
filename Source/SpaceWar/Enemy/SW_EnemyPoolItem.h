@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "SW_EnemyPoolItem.generated.h"
 
+class USW_SecondaryFogOfWarComp;
 struct FEnemyItemParam;
 class UNiagaraSystem;
 class USW_EnemyManager;
@@ -33,9 +34,12 @@ private:
 	UPROPERTY(Category=SpaceWar, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
+	UPROPERTY(Category=SpaceWar, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USW_SecondaryFogOfWarComp> SecondaryFogOfWarComp;
+
 public:
 	UPROPERTY()
-	TWeakObjectPtr<USW_EnemyManager> EnemyManager;
+	TWeakObjectPtr<USW_EnemyManager> EnemyManager = nullptr;
 
 	/*
 	 * 变换
@@ -43,7 +47,7 @@ public:
 	 * 碰撞
 	 * 状态树
 	 * 标签配置(是否需要设置标志位,用GameplayTag)
-	 * 如何过滤场景查询,避免未启用的时候都会锁定
+	 * 如何过滤场景查询,避免未启用的时候都会锁定(移动Manager位置)
 	 */
 	void ActiveItem(const FEnemyItemParam& InEnemyItemParam);
 	void DeactiveItem();

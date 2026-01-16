@@ -6,11 +6,14 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "SpaceWar/AbilitySystem/Abilities/SW_AbilityBase.h"
+#include "SpaceWar/Components/SW_PrimaryFogOfWarComp.h"
 #include "SpaceWar/Data/SW_GameplayTags.h"
 
 
 ASW_CombatActor::ASW_CombatActor() :
-	StateTreeComponent(CreateDefaultSubobject<UStateTreeComponent>(TEXT("StateTreeComponent")))
+	StateTreeComponent(CreateDefaultSubobject<UStateTreeComponent>(TEXT("StateTreeComponent"))),
+	PrimaryFogOfWarComp(CreateDefaultSubobject<USW_PrimaryFogOfWarComp>(TEXT("PrimaryFogOfWarComp")))
+
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -25,6 +28,10 @@ void ASW_CombatActor::Tick(float DeltaTime)
 void ASW_CombatActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//保证状态树在战争迷雾Tick的后面,因为战争迷雾会改变Enemy的Visibility,射击子弹时需要检测可见
+	if (StateTreeComponent and PrimaryFogOfWarComp)
+		StateTreeComponent->AddTickPrerequisiteComponent(PrimaryFogOfWarComp);
 
 	AddAbilityToOwner();
 
