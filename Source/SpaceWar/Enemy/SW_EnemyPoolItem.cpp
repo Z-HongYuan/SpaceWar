@@ -109,3 +109,8 @@ float ASW_EnemyPoolItem::TakeDamage(float DamageAmount, const FDamageEvent& Dama
 
 	return DamageTaken;
 }
+
+void ASW_EnemyPoolItem::OnLocked()
+{
+	StaticMeshComponent->SetCustomDepthStencilValue(1);
+}

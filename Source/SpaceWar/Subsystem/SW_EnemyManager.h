@@ -11,6 +11,7 @@ struct FEnemyItemParam;
 class ASW_EnemyPoolItem;
 /**
  * 用于敌人对象池的管理
+ * 将Hidden作为标志位,所有检测是否存在/生命周期的判断都通过Hidden进行
  */
 UCLASS()
 class SPACEWAR_API USW_EnemyManager : public UWorldSubsystem

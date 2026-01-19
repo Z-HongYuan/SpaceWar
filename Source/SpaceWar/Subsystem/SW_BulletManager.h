@@ -10,6 +10,7 @@
 class ASW_BulletPoolItem;
 /**
  * 用于子弹的对象池
+ * 将Hidden作为标志位,所有检测是否存在/生命周期的判断都通过Hidden进行
  */
 UCLASS()
 class SPACEWAR_API USW_BulletManager : public UWorldSubsystem

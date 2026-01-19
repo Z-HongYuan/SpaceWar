@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/StateTreeComponent.h"
 #include "GameFramework/Actor.h"
+#include "SpaceWar/Interface/SW_CombatInterface.h"
 #include "SW_EnemyPoolItem.generated.h"
 
 class USW_SecondaryFogOfWarComp;
@@ -14,7 +15,7 @@ class UNiagaraSystem;
 class USW_EnemyManager;
 
 UCLASS()
-class SPACEWAR_API ASW_EnemyPoolItem : public AActor
+class SPACEWAR_API ASW_EnemyPoolItem : public AActor, public ISW_CombatInterface
 {
 	GENERATED_BODY()
 
@@ -67,4 +68,8 @@ public:
 	// 死亡时的特效
 	UPROPERTY(Category=SpaceWar, EditDefaultsOnly)
 	TSoftObjectPtr<UNiagaraSystem> DieFX;
+
+	//~ ISW_CombatInterface Interface 战斗接口
+	virtual void OnLocked() override;
+	//~ End ISW_CombatInterface Interface
 };
