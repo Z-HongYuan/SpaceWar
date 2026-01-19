@@ -12,8 +12,8 @@
 EStateTreeRunStatus USW_STT_AttackOnce::EnterState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition)
 {
 	RunStatus = Super::EnterState(Context, Transition);
-	if (RunStatus == EStateTreeRunStatus::Failed) return EStateTreeRunStatus::Failed;
-	if (!OwnerBuilding and !TargetObject) return EStateTreeRunStatus::Failed;
+	if (RunStatus == EStateTreeRunStatus::Failed) return RunStatus;
+	// if (!OwnerBuilding and !TargetObject) return EStateTreeRunStatus::Failed;(移除此判断,这个STT只负责发射子弹,限制条件将会在状态树中设置)
 
 	//在 Enemy 上 调用锁定事件
 	if (ISW_CombatInterface* TempTarget = Cast<ISW_CombatInterface>(TargetObject))
@@ -31,8 +31,8 @@ EStateTreeRunStatus USW_STT_AttackOnce::EnterState(FStateTreeExecutionContext& C
 	}
 	else
 	{
-		if (TargetObject->IsHidden()) //如果处于隐藏模式就不会发射子弹,主要由子弹池或者战争迷雾来设置
-			return EStateTreeRunStatus::Failed;
+		/*if (TargetObject->IsHidden()) //如果处于隐藏模式就不会发射子弹,主要由子弹池或者战争迷雾来设置(移除此判断,这个STT只负责发射子弹,限制条件将会在状态树中设置)
+			return EStateTreeRunStatus::Failed;*/
 
 		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(OwnerBuilding->GetActorLocation(), TargetObject->GetActorLocation());
 		OwnerBuilding->SetActorRotation(FRotator(0.0f, LookAtRotation.Yaw, 0.0f));
