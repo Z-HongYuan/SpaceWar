@@ -17,15 +17,15 @@ USW_SecondaryFogOfWarComp::USW_SecondaryFogOfWarComp()
 	PrimaryComponentTick.TickGroup = ETickingGroup::TG_PrePhysics;
 }
 
-void USW_SecondaryFogOfWarComp::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void USW_SecondaryFogOfWarComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//不需要再做判断,UE内部已经节省开销
 	GetOwner()->SetActorHiddenInGame(true);
+}
+
+void USW_SecondaryFogOfWarComp::BeginPlay()
+{
+	Super::BeginPlay();
 }

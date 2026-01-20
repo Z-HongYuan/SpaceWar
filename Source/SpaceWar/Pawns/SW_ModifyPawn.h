@@ -17,12 +17,7 @@ class SPACEWAR_API ASW_ModifyPawn : public ASW_BasePawn
 public:
 	ASW_ModifyPawn();
 
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 protected:
-	virtual void BeginPlay() override;
 
 private:
 

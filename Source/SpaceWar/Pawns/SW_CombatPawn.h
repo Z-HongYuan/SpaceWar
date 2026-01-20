@@ -21,10 +21,6 @@ class SPACEWAR_API ASW_CombatPawn : public ASW_BasePawn, public IAbilitySystemIn
 public:
 	ASW_CombatPawn();
 
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -56,11 +52,6 @@ private:
 
 	UPROPERTY(Category=Pawn, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<UGameplayAbility>> StartedAbility;
-
-	/*
-	 * 战争迷雾未确定实现路径
-	 */
-
 
 public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;

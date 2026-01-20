@@ -19,11 +19,6 @@ USW_PrimaryFogOfWarComp::USW_PrimaryFogOfWarComp()
 	PrimaryComponentTick.TickGroup = ETickingGroup::TG_LastDemotable;
 }
 
-void USW_PrimaryFogOfWarComp::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void USW_PrimaryFogOfWarComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -43,4 +38,9 @@ void USW_PrimaryFogOfWarComp::TickComponent(float DeltaTime, ELevelTick TickType
 			Enemy->SetActorHiddenInGame(false);
 		}
 	}
+}
+
+void USW_PrimaryFogOfWarComp::BeginPlay()
+{
+	Super::BeginPlay();
 }

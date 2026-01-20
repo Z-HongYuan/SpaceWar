@@ -17,7 +17,7 @@ ASW_BasePawn::ASW_BasePawn() :
 
 	GameplayCamera->SetupAttachment(GetRootComponent());
 	GameplayCamera->bAutoActivate = false;
-	GameplayCamera->bSetControlRotationWhenViewTarget = false;	//关闭设置控制旋转,因为需要设置默认旋转
+	GameplayCamera->bSetControlRotationWhenViewTarget = false; //关闭设置控制旋转,因为需要设置默认旋转
 }
 
 void ASW_BasePawn::PossessedBy(AController* NewController)
@@ -28,19 +28,4 @@ void ASW_BasePawn::PossessedBy(AController* NewController)
 	{
 		GameplayCamera->ActivateCameraForPlayerController(PlayerController);
 	}
-}
-
-void ASW_BasePawn::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void ASW_BasePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
-void ASW_BasePawn::BeginPlay()
-{
-	Super::BeginPlay();
 }
