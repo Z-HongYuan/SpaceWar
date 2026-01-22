@@ -11,7 +11,7 @@
  * 可能会作为炸弹或者炮台,类似于战斗建筑
  * 临时Actor
  */
-UCLASS()
+UCLASS(Abstract)
 class SPACEWAR_API ASW_TempBuilding : public ASW_CombatActor
 {
 	GENERATED_BODY()

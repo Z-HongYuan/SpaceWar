@@ -19,20 +19,13 @@ struct FBuildingSaveData
 	GENERATED_BODY()
 
 public:
-	// 建筑类型（不是 Actor 指针）EBuildingGridType
+	// 建筑类型
 	UPROPERTY()
 	TSubclassOf<ASW_BuildingActor> BuildingClass;
 
-	//类型
-	UPROPERTY()
-	EBuildingGridType BuildingGridType;
-
-	UPROPERTY()
-	FRotator CurrentRotate;
-
 	// 网格坐标
 	UPROPERTY()
-	FIntPoint GridCoord;
+	FTransform BuildingTransform;
 };
 
 /*
@@ -46,4 +39,17 @@ class SPACEWAR_API USW_SaveGame : public USaveGame
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, SaveGame, Category = "SpaceWar")
 	TArray<FBuildingSaveData> BuildingSaveData;
+
+	/*
+	 * 构建函数
+	 * 需要在构建的时候就设置Owner和ChildActor
+	 * 简单的做法就是直接使用射线检测来设置父子关系
+	 * 检测间距为1
+	 * 仅适用于特殊Pawn
+	 */
+	UFUNCTION(BlueprintCallable)
+	void ReBuildActorFromSaveGame(UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintCallable)
+	void SaveBuildingToSaveGame(UObject* WorldContextObject);
 };

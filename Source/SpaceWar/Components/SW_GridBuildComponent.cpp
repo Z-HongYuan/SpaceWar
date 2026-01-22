@@ -4,9 +4,7 @@
 #include "SW_GridBuildComponent.h"
 
 #include "SW_FloatingPawnMovement.h"
-#include "Kismet/GameplayStatics.h"
 #include "SpaceWar/Data/SW_CollisionChannels.h"
-#include "SpaceWar/SaveGame/SW_SaveGame.h"
 
 
 USW_GridBuildComponent::USW_GridBuildComponent()
@@ -18,62 +16,10 @@ void USW_GridBuildComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (CurrentBuildingState == EBuildingState::EBS_Building)
+	if (CurrentBuildingState == EBuildingCompState::EBCS_Building)
 	{
 		UpdateCursorBuildingLocation();
 	}
-}
-
-void USW_GridBuildComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	InitGrid();
-}
-
-FVector USW_GridBuildComponent::GetGridOrigin()
-{
-	FVector Origin = GetOwner()->GetActorLocation();
-	Origin -= FVector(CellSize * Width / 2, CellSize * Height / 2, 0);
-	return Origin;
-}
-
-FIntPoint USW_GridBuildComponent::GetPointFromWorldLocation(const FVector& InLocation)
-{
-	FVector TempLocation = InLocation - GetGridOrigin();
-	TempLocation.X /= CellSize;
-	TempLocation.Y /= CellSize;
-	return FIntPoint(floor(TempLocation.X), floor(TempLocation.Y));
-}
-
-FVector USW_GridBuildComponent::GetWorldLocationFromPoint(const FIntPoint& InPoint)
-{
-	return GetGridOrigin() + FVector(InPoint.X * CellSize + CellSize / 2, InPoint.Y * CellSize + CellSize / 2, 0.f);
-}
-
-bool USW_GridBuildComponent::IsValidPoint(const FIntPoint& InPoint)
-{
-	/*
-	 * 意味着索引有效,必须在0~长宽的范围内
-	 */
-	return InPoint.X >= 0
-		and InPoint.X < Width
-		and InPoint.Y >= 0
-		and InPoint.Y < Height;
-}
-
-ASW_Cell* USW_GridBuildComponent::GetCellFromPoint(const FIntPoint& InPoint)
-{
-	if (!IsValidPoint(InPoint)) return nullptr;
-	int32 Index = InPoint.X + InPoint.Y * Width;
-	if (Index > GridArray.Num() and Index < 0) return nullptr;
-
-	return GridArray[Index];
-}
-
-ASW_Cell* USW_GridBuildComponent::GetCellFromWorldLocation(const FVector& InLocation)
-{
-	return GetCellFromPoint(GetPointFromWorldLocation(InLocation));
 }
 
 void USW_GridBuildComponent::RotateHeldBuilding()
@@ -84,7 +30,7 @@ void USW_GridBuildComponent::RotateHeldBuilding()
 	HeldBuilding->SetActorRotation(HeldBuilding->GetActorRotation().Add(0, 90, 0));
 
 	//CheckAndHighlight
-	CheckAndHighlight(GetCellFromWorldLocation(HeldBuilding->GetActorLocation())->GetCellPosition(), HeldBuilding->GetShapeFootPrint());
+	CheckAndHighlight(HeldBuilding->GetActorLocation(), HeldBuilding->GetShapeFootPrint());
 }
 
 void USW_GridBuildComponent::CleanHighlight()
@@ -96,9 +42,9 @@ void USW_GridBuildComponent::CleanHighlight()
 	}
 }
 
-bool USW_GridBuildComponent::CheckAndHighlight(const FIntPoint& InPoint, const TArray<FIntPoint>& InFootPrint)
+bool USW_GridBuildComponent::CheckAndHighlight(const FVector& InVector, const TArray<FIntPoint>& InFootPrint)
 {
-	if (CurrentBuildingState != EBuildingState::EBS_Building) return false;
+	if (CurrentBuildingState != EBuildingCompState::EBCS_Building) return false;
 
 	CleanHighlight();
 
@@ -106,30 +52,58 @@ bool USW_GridBuildComponent::CheckAndHighlight(const FIntPoint& InPoint, const T
 
 	TArray<ASW_Cell*> WaitToHighlight = {};
 
-	ECellState FinalCellState = ECellState::ECS_Idle;
+	ECellState FinalCellState;
 
-	for (const FIntPoint& Element : InFootPrint)
+	/*
+	 * 通过射线检测Cells来访问是否可用,并且添加其他限制
+	 */
+	for (const FIntPoint& Point : InFootPrint)
 	{
-		FIntPoint Temp;
-		Temp = Element + InPoint;
-		if (!IsValidPoint(Temp))
+		FVector TraceStartLocation = InVector + FVector(Point.X * CELL_SIZE, Point.Y * CELL_SIZE, 0);
+		FVector TraceEndLocation = TraceStartLocation - FVector(0, 0, 1000);
+		FHitResult HitResult;
+		bool bHit = GetWorld()->LineTraceSingleByObjectType(HitResult, TraceStartLocation, TraceEndLocation, ECC_Object_Cell);
+
+		/*检查是否有Cells*/
+		if (!bHit or !HitResult.GetActor())
 		{
 			bCanBuild = false;
 			break;
 		}
-		if (GetCellFromPoint(Temp))
-		{
-			WaitToHighlight.Add(GetCellFromPoint(Temp));
 
-			if (GetCellFromPoint(Temp)->GetIsOccupied()) bCanBuild = false;
+		/*检查Cells上的占位标记*/
+		ASW_Cell* Cell = Cast<ASW_Cell>(HitResult.GetActor());
+		if (HitResult.GetActor() and Cell)
+		{
+			if (Cell) WaitToHighlight.AddUnique(Cell);
+			if (Cell->GetIsOccupied())
+			{
+				bCanBuild = false;
+				break;
+			}
+		}
+
+		//命中位置跟中心位置误差不小于阈值
+		if (FVector::DistXY(HitResult.GetActor()->GetActorLocation(), HitResult.Location) >= CheckRange)
+		{
+			bCanBuild = false;
+			break;
+		}
+
+		/*检查是否拥有建筑的Tag*/
+		if (!Cell->GetAllowTags().HasTagExact(HeldBuilding->GetBuildingTag()))
+		{
+			bCanBuild = false;
+			break;
 		}
 	}
+
 	bCanBuild ? FinalCellState = ECellState::ECS_CanBuild : FinalCellState = ECellState::ECS_CannotBuild;
 
 	for (ASW_Cell*& Element : WaitToHighlight)
 	{
 		Element->SetCellState(FinalCellState);
-		PreHighlightArray.Add(Element);
+		PreHighlightArray.AddUnique(Element);
 	}
 
 	return bCanBuild;
@@ -139,47 +113,49 @@ void USW_GridBuildComponent::CommitBuildingToGrid()
 {
 	if (!HeldBuilding) return;
 
-	//建筑物的原点
-	ASW_Cell* OriginCell = GetCellFromWorldLocation(HeldBuilding->GetActorLocation());
 
-	for (FIntPoint& Element : HeldBuilding->GetShapeFootPrint())
+	for (FIntPoint& Point : HeldBuilding->GetShapeFootPrint())
 	{
-		FIntPoint Point;
-		Point = OriginCell->GetCellPosition() + Element;
-		if (IsValidPoint(Point))
+		FVector TraceStartLocation = HeldBuilding->GetActorLocation() + FVector(Point.X * CELL_SIZE, Point.Y * CELL_SIZE, 0);
+		FVector TraceEndLocation = TraceStartLocation - FVector(0, 0, 1000);
+		FHitResult HitResult;
+		bool bHit = GetWorld()->LineTraceSingleByObjectType(HitResult, TraceStartLocation, TraceEndLocation, ECC_Object_Cell);
+		if (bHit and HitResult.GetActor())
 		{
-			if (ASW_Cell* Cell = GetCellFromPoint(Point))
+			if (ASW_Cell* Cell = Cast<ASW_Cell>(HitResult.GetActor()))
 			{
 				Cell->SetIsOccupied(true);
+				//这个仅用于建造模式下的销毁
+				Cell->OccupiedActor = HeldBuilding;
 			}
 		}
 	}
 
 	//绑定建筑到Actor上
-	HeldBuilding->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
+	HeldBuilding->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepRelativeTransform);
 
 	CleanHighlight();
 	HeldBuilding->OnBuilded();
 	HeldBuilding = nullptr;
-	CurrentBuildingState = EBuildingState::EBS_Idle;
+	CurrentBuildingState = EBuildingCompState::EBCS_Idle;
 }
 
 void USW_GridBuildComponent::CancelCurrentAction()
 {
-	if (CurrentBuildingState == EBuildingState::EBS_Building)
+	if (CurrentBuildingState == EBuildingCompState::EBCS_Building)
 	{
 		if (!HeldBuilding) return;
 		HeldBuilding->Destroy();
 		HeldBuilding = nullptr;
 		CleanHighlight();
-		CurrentBuildingState = EBuildingState::EBS_Idle;
+		CurrentBuildingState = EBuildingCompState::EBCS_Idle;
 	}
-	else if (CurrentBuildingState == EBuildingState::EBS_Selecting)
+	else if (CurrentBuildingState == EBuildingCompState::EBCS_Selecting)
 	{
 		if (!SelectedBuilding) return;
 		SelectedBuilding->SetIsSelected(false);
 		SelectedBuilding = nullptr;
-		CurrentBuildingState = EBuildingState::EBS_Idle;
+		CurrentBuildingState = EBuildingCompState::EBCS_Idle;
 	}
 }
 
@@ -191,7 +167,7 @@ void USW_GridBuildComponent::SelectBuildingOnGrid(ASW_BuildingActor* InBuilding)
 	SelectedBuilding = InBuilding;
 	SelectedBuilding->SetIsSelected(true);
 
-	CurrentBuildingState = EBuildingState::EBS_Selecting;
+	CurrentBuildingState = EBuildingCompState::EBCS_Selecting;
 }
 
 void USW_GridBuildComponent::UnSelectBuild()
@@ -199,23 +175,25 @@ void USW_GridBuildComponent::UnSelectBuild()
 	if (!SelectedBuilding) return;
 	SelectedBuilding->SetIsSelected(false);
 	SelectedBuilding = nullptr;
-	CurrentBuildingState = EBuildingState::EBS_Idle;
+	CurrentBuildingState = EBuildingCompState::EBCS_Idle;
 }
 
 void USW_GridBuildComponent::DeleteSelectBuilding()
 {
 	if (!SelectedBuilding) return;
 	//消除占位信息
-	ASW_Cell* CellCenter = GetCellFromWorldLocation(SelectedBuilding->GetActorLocation());
-	for (FIntPoint Element : SelectedBuilding->GetShapeFootPrint())
+	for (FIntPoint& Point : SelectedBuilding->GetShapeFootPrint())
 	{
-		FIntPoint Point;
-		Point = CellCenter->GetCellPosition() + Element;
-		if (IsValidPoint(Point))
+		FVector TraceStartLocation = SelectedBuilding->GetActorLocation() + FVector(Point.X * CELL_SIZE, Point.Y * CELL_SIZE, 0);
+		FVector TraceEndLocation = TraceStartLocation - FVector(0, 0, 1000);
+		FHitResult HitResult;
+		bool bHit = GetWorld()->LineTraceSingleByObjectType(HitResult, TraceStartLocation, TraceEndLocation, ECC_Object_Cell);
+		if (bHit and HitResult.GetActor())
 		{
-			if (ASW_Cell* Cell = GetCellFromPoint(Point))
+			if (ASW_Cell* Cell = Cast<ASW_Cell>(HitResult.GetActor()))
 			{
 				Cell->SetIsOccupied(false);
+				Cell->OccupiedActor = nullptr;
 			}
 		}
 	}
@@ -226,29 +204,28 @@ void USW_GridBuildComponent::DeleteSelectBuilding()
 	//删除建筑物
 	SelectedBuilding->Destroy();
 	SelectedBuilding = nullptr;
-	CurrentBuildingState = EBuildingState::EBS_Idle;
+	CurrentBuildingState = EBuildingCompState::EBCS_Idle;
 }
 
 void USW_GridBuildComponent::UpdateCursorBuildingLocation()
 {
 	if (!HeldBuilding) return;
-	if (CurrentBuildingState != EBuildingState::EBS_Building) return;
+	if (CurrentBuildingState != EBuildingCompState::EBCS_Building) return;
 
-	FVector WorldLocation;
-	FVector WorldDirection;
-	bool bIsSuccess = UGameplayStatics::GetPlayerController(GetWorld(), 0)->DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
-	if (!bIsSuccess) return;
+	//移动到Cell的中心位置上
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	{
+		FHitResult HitResult;
+		if (PC->GetHitResultUnderCursor(ECC_Object_Cell, false, HitResult))
+		{
+			if (HitResult.GetActor())
+			{
+				HeldBuilding->SetActorLocation(HitResult.GetActor()->GetActorLocation());
+			}
+		}
+	}
 
-	FHitResult HitResult;
-	bIsSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, WorldLocation + WorldDirection * 100000, ECC_Object_Cell);
-	if (!bIsSuccess) return;
-
-	ASW_Cell* HitCell = GetCellFromWorldLocation(HitResult.Location);
-	if (!HitCell) return;
-
-	HeldBuilding->SetActorLocation(GetWorldLocationFromPoint(HitCell->GetCellPosition()));
-
-	CheckAndHighlight(HitCell->GetCellPosition(), HeldBuilding->GetShapeFootPrint());
+	CheckAndHighlight(HeldBuilding->GetActorLocation(), HeldBuilding->GetShapeFootPrint());
 }
 
 void USW_GridBuildComponent::SpawnAndAttachBuilding(TSubclassOf<ASW_BuildingActor> InBuildingClass)
@@ -258,144 +235,48 @@ void USW_GridBuildComponent::SpawnAndAttachBuilding(TSubclassOf<ASW_BuildingActo
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();
 	SpawnParams.Instigator = GetOwner<APawn>();
-	HeldBuilding = GetWorld()->SpawnActor<ASW_BuildingActor>(InBuildingClass, GetGridOrigin(), FRotator::ZeroRotator, SpawnParams);
 
-	CurrentBuildingState = EBuildingState::EBS_Building;
+	HeldBuilding = GetWorld()->SpawnActor<ASW_BuildingActor>(InBuildingClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+
+	CurrentBuildingState = EBuildingCompState::EBCS_Building;
 	UpdateCursorBuildingLocation();
-}
-
-
-void USW_GridBuildComponent::InitGrid()
-{
-	for (int Y = 0; Y < Height; ++Y)
-	{
-		for (int X = 0; X < Width; ++X)
-		{
-			if (!CellClass) continue;
-
-			FActorSpawnParameters SpawnParams;
-			SpawnParams.Owner = GetOwner();
-			SpawnParams.Instigator = GetOwner<APawn>();
-			ASW_Cell* Spawned = GetWorld()->SpawnActor<ASW_Cell>(CellClass, GetWorldLocationFromPoint(FIntPoint(X, Y)), FRotator::ZeroRotator, SpawnParams);
-			Spawned->SetCellPosition(FIntPoint(X, Y));
-			GridArray.Add(Spawned);
-
-			//附加到Pawn上
-			Spawned->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
-		}
-	}
 }
 
 void USW_GridBuildComponent::Rotate_Handle()
 {
-	if (CurrentBuildingState != EBuildingState::EBS_Building) return;
+	if (CurrentBuildingState != EBuildingCompState::EBCS_Building) return;
 	RotateHeldBuilding();
 }
 
 void USW_GridBuildComponent::Delete_Handle()
 {
-	if (CurrentBuildingState != EBuildingState::EBS_Selecting) return;
+	if (CurrentBuildingState != EBuildingCompState::EBCS_Selecting) return;
 	DeleteSelectBuilding();
 }
 
 void USW_GridBuildComponent::Confirm_Handle()
 {
 	FHitResult HitResult;
-	bool bIsSuccess;
 	switch (CurrentBuildingState)
 	{
-	case EBuildingState::EBS_Idle:
-		FVector WorldLocation;
-		FVector WorldDirection;
-		bIsSuccess = UGameplayStatics::GetPlayerController(GetWorld(), 0)->DeprojectMousePositionToWorld(WorldLocation, WorldDirection);
-		if (!bIsSuccess) break;
+	case EBuildingCompState::EBCS_Idle:
 
-		bIsSuccess = GetWorld()->LineTraceSingleByChannel(HitResult, WorldLocation, WorldLocation + WorldDirection * 100000, ECC_Object_Building);
-		if (!bIsSuccess) break;
-
-		if (ASW_BuildingActor* HitBuilding = Cast<ASW_BuildingActor>(HitResult.GetHitObjectHandle().FetchActor()))
-		{
-			SelectBuildingOnGrid(HitBuilding);
-		}
-
+		if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+			if (PC->GetHitResultUnderCursor(ECC_Object_Building, false, HitResult))
+				if (ASW_BuildingActor* HitBuilding = Cast<ASW_BuildingActor>(HitResult.GetActor()))
+					SelectBuildingOnGrid(HitBuilding);
 		break;
 
-	case EBuildingState::EBS_Building:
+	case EBuildingCompState::EBCS_Building:
 		if (!HeldBuilding) break;
-		if (ASW_Cell* Cell = GetCellFromWorldLocation(HeldBuilding->GetActorLocation()))
-		{
-			if (CheckAndHighlight(Cell->GetCellPosition(), HeldBuilding->GetShapeFootPrint()))
-			{
-				CommitBuildingToGrid();
-			}
-		}
-
+		if (CheckAndHighlight(HeldBuilding->GetActorLocation(), HeldBuilding->GetShapeFootPrint()))
+			CommitBuildingToGrid();
 		break;
+	default: ;
 	}
 }
 
 void USW_GridBuildComponent::Cancel_Handle()
 {
 	CancelCurrentAction();
-}
-
-void USW_GridBuildComponent::ReBuildActorFromSaveGame(USaveGame* InSaveGame, USaveGame*& OutSaveGame)
-{
-	OutSaveGame = InSaveGame;
-
-	if (!InSaveGame) return;
-	USW_SaveGame* SaveGame = Cast<USW_SaveGame>(InSaveGame);
-	if (!SaveGame) return;
-
-	for (const FBuildingSaveData& Element : SaveGame->BuildingSaveData)
-	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = GetOwner();
-		SpawnParams.Instigator = GetOwner<APawn>();
-		ASW_BuildingActor* SpawnedBuilding = GetWorld()->SpawnActor<ASW_BuildingActor>(Element.BuildingClass, GetWorldLocationFromPoint(Element.GridCoord), Element.CurrentRotate,
-		                                                                               SpawnParams);
-		SpawnedBuilding->OnBuilded();
-
-		//绑定到Actor
-		SpawnedBuilding->AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
-		
-		CurrentBuildingArray.Add(SpawnedBuilding);
-	}
-
-	/*
-	 * 建造组件准备好了之后,才能再调用移动组件中
-	 */
-	GetOwner()->ForEachComponent<USW_FloatingPawnMovement>(
-		false,
-		[](USW_FloatingPawnMovement* Component)
-		{
-			Component->UpdatePropellerArray();
-		});
-}
-
-void USW_GridBuildComponent::SaveActorToSaveGame(USaveGame* InSaveGame, USaveGame*& OutSaveGame)
-{
-	OutSaveGame = InSaveGame;
-
-	if (!InSaveGame) return;
-	USW_SaveGame* SaveGame = Cast<USW_SaveGame>(InSaveGame);
-	if (!SaveGame) return;
-	SaveGame->BuildingSaveData.Empty();
-
-	TArray<AActor*> BuildingArray;
-	UGameplayStatics::GetAllActorsOfClass(this, ASW_BuildingActor::StaticClass(), BuildingArray);
-
-	for (AActor*& Element : BuildingArray)
-	{
-		ASW_BuildingActor* Building = Cast<ASW_BuildingActor>(Element);
-		if (!Building) continue;
-
-		SaveGame->BuildingSaveData.Add(
-			FBuildingSaveData(
-				Building->GetClass(),
-				Building->GetBuildingGridType(),
-				Building->GetActorRotation(),
-				GetPointFromWorldLocation(Building->GetActorLocation())
-			));
-	}
 }

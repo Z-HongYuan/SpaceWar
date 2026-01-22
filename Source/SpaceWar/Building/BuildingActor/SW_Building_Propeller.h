@@ -11,15 +11,13 @@ class UGameplayEffect;
 /*
  * 推进器Actor
  */
-UCLASS()
+UCLASS(Abstract)
 class SPACEWAR_API ASW_Building_Propeller : public ASW_BuildingActor
 {
 	GENERATED_BODY()
 
 public:
 	ASW_Building_Propeller();
-
-	virtual void Tick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -31,10 +29,8 @@ private:
 	FDelegateHandle OnFuelChangeDelegateHandle;
 
 public:
-	UFUNCTION()
 	void EnablePropeller();
 
-	UFUNCTION()
 	void DisablePropeller();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Propeller")
@@ -52,13 +48,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Propeller")
 	float FuelCost;
 
-	UPROPERTY()
 	bool bIsEnablePropeller = false;
 
 	//方向坐标
-	UPROPERTY()
 	FVector Direction;
 
-	UFUNCTION()
 	void UpdateDirection();
 };

@@ -11,7 +11,7 @@ struct FBulletItemParam;
 /*
  * 用于对象池的子弹对象
  */
-UCLASS()
+UCLASS(Abstract)
 class SPACEWAR_API ASW_BulletPoolItem : public ASW_Bullet
 {
 	GENERATED_BODY()

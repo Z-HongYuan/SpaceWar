@@ -7,6 +7,7 @@
 #include "SpaceWar/Components/SW_GridBuildComponent.h"
 #include "SW_BasePawn.generated.h"
 
+class USW_SpawnCellsComp;
 class UGameplayCameraComponent;
 /*
  * 基础Pawn
@@ -23,6 +24,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 protected:
+	virtual void BeginPlay() override;
+
 private:
 	/*
 	 * 基础Mesh
@@ -41,6 +44,8 @@ private:
 	 */
 	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USW_GridBuildComponent> GridBuildComponent;
+	UPROPERTY(Category=Pawn, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USW_SpawnCellsComp> SpawnCellsComp;
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpaceWar")

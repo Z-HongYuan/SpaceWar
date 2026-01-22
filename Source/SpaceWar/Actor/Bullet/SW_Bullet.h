@@ -16,7 +16,7 @@
  * 4. 命中效果
  * 5. 追踪模式
  */
-UCLASS()
+UCLASS(Abstract)
 class SPACEWAR_API ASW_Bullet : public AActor
 {
 	GENERATED_BODY()

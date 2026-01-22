@@ -9,36 +9,26 @@
 ASW_BuildingActor::ASW_BuildingActor() :
 	BuildingMesh(CreateDefaultSubobject<UStaticMeshComponent>("BuildingMesh"))
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	SetRootComponent(BuildingMesh);
 	BuildingMesh->SetCollisionProfileName(TEXT("Building"));
-}
-
-void ASW_BuildingActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void ASW_BuildingActor::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 TArray<FIntPoint> ASW_BuildingActor::GetShapeFootPrint()
 {
 	TArray<FIntPoint> FootPrint = USW_BuildingFunction::BFL_GetShapeFootPrint(BuildingGridType);
-
-	for (int i = 0; i < CurrentRotate / 90; ++i)
-	{
-		//处理旋转了多少次90度
-		USW_BuildingFunction::BFL_RotateFootPrint(FootPrint);
-	}
-
+	USW_BuildingFunction::BFL_RotatedFootPrint(FootPrint, CurrentRotate);
 	return FootPrint;
+}
+
+void ASW_BuildingActor::OnBuilded()
+{
+	K2_OnBuilded();
 }
 
 void ASW_BuildingActor::SetIsSelected(bool bInSelected)
 {
+	if (bIsSelected == bInSelected) return;
 	bIsSelected = bInSelected;
 	OnSelectedChange(bIsSelected);
 }

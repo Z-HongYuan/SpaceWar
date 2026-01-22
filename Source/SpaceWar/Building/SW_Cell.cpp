@@ -7,25 +7,36 @@
 ASW_Cell::ASW_Cell() :
 	CellMesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CellMesh")))
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = bIsDebug;
 
 	SetRootComponent(CellMesh);
 	CellMesh->SetCollisionProfileName(TEXT("Cell"));
 	CellMesh->SetGenerateOverlapEvents(false);
 }
 
-void ASW_Cell::Tick(float DeltaTime)
+void ASW_Cell::Tick(float DeltaSeconds)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaSeconds);
+
+	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red,
+	                                 FString::Printf(TEXT("Cell名字 %s \n上面的建筑 %s\n占用状态: %s"),
+	                                                 *GetName(),
+	                                                 OccupiedActor.IsValid() ? *OccupiedActor->GetName() : TEXT("nullptr"),
+	                                                 bIsOccupied ? TEXT("True") : TEXT("False")));
 }
 
-void ASW_Cell::BeginPlay()
+void ASW_Cell::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::BeginPlay();
+	if (OccupiedActor.IsValid())
+	{
+		OccupiedActor->Destroy();
+	}
+	Super::EndPlay(EndPlayReason);
 }
 
 void ASW_Cell::SetCellState(const ECellState& InCellState)
 {
+	if (CellState == InCellState) return;
 	CellState = InCellState;
 	OnCellStateChanged(CellState);
 }

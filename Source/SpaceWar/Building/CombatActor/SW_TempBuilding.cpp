@@ -24,6 +24,6 @@ void ASW_TempBuilding::BeginPlay()
 
 	if (bIsAttached)
 	{
-		AttachToActor(GetOwner(), FAttachmentTransformRules::KeepWorldTransform);
+		AttachToActor(GetOwner(), FAttachmentTransformRules::KeepRelativeTransform);
 	}
 }

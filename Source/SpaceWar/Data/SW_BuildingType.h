@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "SW_BuildingType.generated.h"
+
 /*
  * 单元格状态
  * 需要改变BuildingComponent里面的Check
@@ -30,19 +34,21 @@ enum class EBuildingGridType : uint8
 	EBT_Max UMETA(DisplayName="None")
 };
 
+/*
+ * 新建筑组件使用的状态,标记组件处于的建造状态
+ */
 UENUM()
-enum class EBuildingState : uint8
+enum class EBuildingCompState : uint8
 {
-	EBS_Idle UMETA(DisplayName="空闲"),
-	EBS_Building UMETA(DisplayName="放置状态"),
-	EBS_Selecting UMETA(DisplayName="选择状态"),
+	EBCS_Idle UMETA(DisplayName="空闲"),
+	EBCS_Building UMETA(DisplayName="放置状态"),
+	EBCS_Selecting UMETA(DisplayName="选择状态"),
 
-	EBS_Max UMETA(DisplayName="None")
+	EBCS_Max UMETA(DisplayName="None")
 };
 
 /*
  * 未使用,推进器的方位问题由Dot公式处理
- */
 UENUM()
 enum class EBuildingDirection : uint8
 {
@@ -52,4 +58,23 @@ enum class EBuildingDirection : uint8
 	EBD_Right UMETA(DisplayName="向右"),
 
 	EBD_Max UMETA(DisplayName="None")
+};
+*/
+
+#define CELL_SIZE 100
+
+/*
+ * 用于批量生成Cell的参数
+ */
+USTRUCT(BlueprintType)
+struct FSpawnCellParam
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (MakeEditWidget))
+	FVector CellLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (MakeEditWidget))
+	FGameplayTagContainer CellTags;
 };

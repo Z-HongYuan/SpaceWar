@@ -61,3 +61,12 @@ void USW_BuildingFunction::BFL_RotateFootPrint(TArray<FIntPoint>& InFootPrintArr
 		FootPrint = Temp;
 	}
 }
+
+void USW_BuildingFunction::BFL_RotatedFootPrint(TArray<FIntPoint>& InFootPrintArray, int32 Rotate)
+{
+	const int32 RotateCount = Rotate % 360 / 90; //旋转次数
+	for (int32 i = 0; i < RotateCount; i++)
+	{
+		BFL_RotateFootPrint(InFootPrintArray);
+	}
+}

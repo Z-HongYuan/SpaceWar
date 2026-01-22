@@ -11,12 +11,7 @@ class ASW_CombatPawn;
 
 ASW_Building_Propeller::ASW_Building_Propeller()
 {
-	PrimaryActorTick.bCanEverTick = true;
-}
-
-void ASW_Building_Propeller::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void ASW_Building_Propeller::BeginPlay()

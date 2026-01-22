@@ -11,7 +11,7 @@
  * 基础单元格
  * 拥有被占用,状态,坐标
  */
-UCLASS()
+UCLASS(Abstract)
 class SPACEWAR_API ASW_Cell : public AActor
 {
 	GENERATED_BODY()
@@ -19,46 +19,43 @@ class SPACEWAR_API ASW_Cell : public AActor
 public:
 	ASW_Cell();
 
-	virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 protected:
-	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> CellMesh;
 
 	//是否被占用
-	UPROPERTY()
 	bool bIsOccupied = false;
 
 	//单元格状态
-	UPROPERTY()
 	ECellState CellState = ECellState::ECS_Idle;
 
-	//单元格坐标
-	UPROPERTY()
-	FIntPoint CellPosition = FIntPoint();
+	//允许放置的建筑类型
+	FGameplayTagContainer AllowTags;
 
 public:
+	//观察者模式的指向建筑在Cell之上的指针
+	UPROPERTY()
+	TWeakObjectPtr<AActor> OccupiedActor;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "SpaceWar")
+	bool bIsDebug = false;
+
+	/*~暴露的事件*/
 	UFUNCTION(BlueprintImplementableEvent, Category = "SpaceWar")
 	void OnCellStateChanged(ECellState InCellState);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpaceWar")
+	/*~C++内部使用*/
 	FORCEINLINE bool GetIsOccupied() const { return bIsOccupied; }
-
-	UFUNCTION(BlueprintCallable, Category = "SpaceWar")
 	FORCEINLINE void SetIsOccupied(const bool& InIsOccupied) { bIsOccupied = InIsOccupied; }
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpaceWar")
 	FORCEINLINE ECellState GetCellState() const { return CellState; }
-
-	UFUNCTION(BlueprintCallable, Category = "SpaceWar")
 	void SetCellState(const ECellState& InCellState);
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SpaceWar")
-	FORCEINLINE FIntPoint GetCellPosition() const { return CellPosition; }
-
-	UFUNCTION(BlueprintCallable, Category = "SpaceWar")
-	FORCEINLINE void SetCellPosition(const FIntPoint& InCellPosition) { CellPosition = InCellPosition; }
+	FORCEINLINE const FGameplayTagContainer& GetAllowTags() const { return AllowTags; }
+	FORCEINLINE void SetAllowTags(const FGameplayTagContainer& InAllowTags) { AllowTags = InAllowTags; }
+	FORCEINLINE void AddAllowTag(const FGameplayTag& InTag) { AllowTags.AddTag(InTag); }
+	FORCEINLINE void RemoveAllowTag(const FGameplayTag& InTag) { AllowTags.RemoveTag(InTag); }
 };

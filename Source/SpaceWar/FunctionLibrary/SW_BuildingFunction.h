@@ -30,4 +30,10 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "SpaceWar")
 	static void BFL_RotateFootPrint(TArray<FIntPoint>& InFootPrintArray);
+
+	/*
+	 * 根据输入的坐标数组,和旋转次数,返回旋转后的坐标数组
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SpaceWar")
+	static void BFL_RotatedFootPrint(TArray<FIntPoint>& InFootPrintArray, int32 Rotate);
 };

@@ -20,11 +20,6 @@ ASW_CombatActor::ASW_CombatActor() :
 	StateTreeComponent->SetStartLogicAutomatically(false);
 }
 
-void ASW_CombatActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void ASW_CombatActor::BeginPlay()
 {
 	Super::BeginPlay();

@@ -10,7 +10,7 @@
  * 建筑
  * 生成建筑的建筑
  */
-UCLASS()
+UCLASS(Abstract)
 class SPACEWAR_API ASW_SpawnedActor : public ASW_CombatActor
 {
 	GENERATED_BODY()
@@ -18,10 +18,7 @@ class SPACEWAR_API ASW_SpawnedActor : public ASW_CombatActor
 public:
 	ASW_SpawnedActor();
 
-	virtual void Tick(float DeltaTime) override;
-
 protected:
-	virtual void BeginPlay() override;
 
 private:
 
