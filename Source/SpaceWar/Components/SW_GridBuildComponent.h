@@ -61,8 +61,6 @@ private:
 	 * 使用的Temp变量
 	 */
 	UPROPERTY()
-	TArray<ASW_Cell*> GridArray = {};
-	UPROPERTY()
 	TArray<ASW_Cell*> PreHighlightArray = {};
 
 	EBuildingCompState CurrentBuildingState = EBuildingCompState::EBCS_Idle;
